@@ -1,0 +1,42 @@
+/* Dropdown.css */
+.dropdown {
+    position: absolute;
+    /* background: #1f2639; */
+    background: transparent;
+    backdrop-filter: blur(9px);
+    border: 1px solid transparent;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    margin-top: 190px; /* Adjust to position below the Ethereum element */
+    padding: 8px;
+    width: auto; /* Allow width to adjust based on content */
+    max-width: 195px; /* Limit maximum width if needed */
+    right: -3.0px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+  .dropdownItem {
+    display: flex;
+    align-items: center;
+    padding: 9px 15px;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+  
+  .dropdownItem:hover {
+    background-color: #242c43;
+  }
+  
+  .dropdownItem img {
+    width: 24px; /* Adjust image size as needed */
+    height: 24px; /* Adjust image size as needed */
+    margin-right: 10px; /* Space between image and text */
+  }
+  
+  .itemText {
+    flex: 1; /* Allow text to take remaining space */
+    text-align: left; /* Center text within the dropdown item */
+  }
+  
