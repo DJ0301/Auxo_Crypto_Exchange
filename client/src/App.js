@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import Header from "./components/Header";
 import Swap from "./components/Swap";
-import Tokens from "./components/UPI";
+import Tokens from "./components/Product";
 import { Routes, Route } from "react-router-dom";
 import { useConnect, useAccount } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
@@ -44,7 +44,6 @@ function App() {
       <div className="chatbot-icon" onClick={toggleChatbot}>
         <img src="/chatbot (1).png" alt="Chatbot Icon" id="chatbotlogo" />
       </div>
-
       {/* Render the chatbot */}
       {isChatbotOpen && <Chatbot onClose={toggleChatbot} />}
     </div>
