@@ -93,7 +93,6 @@ const AssetTrading = () => {
       {transactionID && (
         <div>
           <p>Transaction ID: {transactionID}</p>
-          <a href={`https://testnet.diamcircle.io/transactions/${transactionID}`} target="_blank" rel="noopener noreferrer">View Transaction on Testnet</a>
         </div>
       )}
     </div>
