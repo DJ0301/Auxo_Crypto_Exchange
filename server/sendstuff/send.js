@@ -151,7 +151,6 @@ const tradeforDIAM = async (req, res) => {
     }
 };
 
-
 const tradeforAssets = async (req, res) => {
     try {
         const { UserSecret, amount, asset } = req.body;
@@ -272,9 +271,39 @@ const tradeforAssets = async (req, res) => {
     }
 };
 
+const getBalances = async (req, res) => {
+    try {
+        const { publicKey } = req.body;
+        const account = await server.loadAccount(publicKey);
+        const balances = account.balances.map(balance => ({
+            assetType: balance.asset_type,
+            assetCode: balance.asset_code,
+            balance: balance.balance
+        }));
+        res.json({ publicKey, balances });
+    } catch (error) {
+        console.error('Error fetching balances:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+const fetchTokenPrice = (req, res) => {
+    try {
+        const { asset } = req.body;
+        const price = DIAM_RATE[asset];
 
-
-
+        if (price !== undefined) {
+            res.json({
+                asset: asset,
+                price: price,
+            });
+        } else {
+            res.status(404).json({ error: `Price for asset ${asset} not found` });
+        }
+    } catch (error) {
+        console.error('Error fetching token price:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
 app.post('/login', (req, res) => {
     login(req, res);
 });
@@ -282,8 +311,16 @@ app.post('/login', (req, res) => {
 app.post('/trade-for-DIAM', (req, res) => {
     tradeforDIAM(req, res);
 });
+
 app.post('/trade-for-assets', (req, res) => {
     tradeforAssets(req, res);
+});
+
+app.post('/get-balances', (req, res) => {
+    getBalances(req, res);
+});
+app.post('/fetch-token-price', (req,res) => {
+    fetchTokenPrice(req,res);
 });
 app.listen(port, () => {
     console.log(`Diamante backend listening at http://localhost:${port}`);
