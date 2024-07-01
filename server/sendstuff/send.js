@@ -11,18 +11,7 @@ app.use(cors());
 
 const server = new DiamSdk.Horizon.Server('https://diamtestnet.diamcircle.io/');
 
-const login = async (req, res) => {
-    try {
-        const { UserSecret } = req.body;
-        const userAccount = DiamSdk.Keypair.fromSecret(UserSecret);
-        res.json({
-            publicKey: userAccount.publicKey(),
-        });
-    } catch (error) {
-        console.error('Error in login:', error);
-        res.status(500).json({ error: error.message });
-    }
-};
+
 
 const DIAM_RATE = {
     'TestBTC': 1, // 1 DIAM = 1 BTC
@@ -320,7 +309,168 @@ const tradeforAssets = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+/*
+Create a function called tradeAssets that will take in the user secret, amount,SentAsset and ReceivedAsset as parameters.
+The user should be able to swap out the asset in his account for another asset.
+The rate between the assets should be calulated properly as DIAM_RATE[ReceivedAsset]/DIAM_RATE[SentAsset]
+There will be no sentAssetSecret as the user will be sending the asset from his account.
+The ReceivedAssetSecret will be set based on the asset that the user wants to receive.
+The user will send the SentAsset to the account of AssetB and receive the ReceivedAsset from the account of AssetB.
+The user will need to set up a trustline for the ReceivedAsset if it does not exist.
+*/
+const tradeAssets = async (req, res) => {
+    try {
+    const { UserSecret, amount, SentAsset, ReceivedAsset } = req.body;
+    let rate = parseFloat(DIAM_RATE[ReceivedAsset]) / parseFloat(DIAM_RATE[SentAsset]);
+    console.log(`rate for this exchange: ${rate}`);
+    let ReceivedAssetSecret = '';
+    if (ReceivedAsset === 'TestBTC') {
+        ReceivedAssetSecret = "SAH53BF3S5ERGZLKG5FJIP4AYE7KPDP7CNY67DOSUHVZW7YG2FGZPGJH";
+    } else if (ReceivedAsset === 'TestETH') {
+        ReceivedAssetSecret = "SAQXHIHSY57M3Q5L3Q7ZPEHZYFGEV5WMZDQCQJTZDS24PBAOSBO75OR3";
+    } else if (ReceivedAsset === 'TestDOGE') {
+        ReceivedAssetSecret = "SDDFMV4IYDT5TPEI6QVOX3SFPWOS2JITMASYIA7Y23YTH27EU3BXZQNC";
+    } else {
+        return res.status(400).json({ message: 'Invalid asset' });
+    }
+    const UserAccount = DiamSdk.Keypair.fromSecret(UserSecret);
+    const ReceivedAssetAccount = DiamSdk.Keypair.fromSecret(ReceivedAssetSecret);
 
+
+    const TestBTC = new DiamSdk.Asset('TestBTC', 'GD6ZQJAJDCKCOGB3MK2WVJIOLYWP4AWYZ3SDOFIAVUTSE3QVEDZDKTY6');
+    const TestETH = new DiamSdk.Asset('TestETH', 'GDBJMYAYPDAA7CUQAXEJMIWBIR2WMQGGKWRLAVY434BGGW7TGJRT3R7N');
+    const TestDOGE = new DiamSdk.Asset('TestDOGE', 'GCHR5OL2ITYGXNUF5T5J5NKTYLK5ESEBWUSY3N5MRGE2CNB3EZKDQOKS');
+    
+    let SentAssetObj = SentAsset === 'TestBTC' ? TestBTC : SentAsset === 'TestETH' ? TestETH : TestDOGE;
+    let ReceivedAssetObj = ReceivedAsset === 'TestBTC' ? TestBTC : ReceivedAsset === 'TestETH' ? TestETH : TestDOGE;
+    // Set up the trustline from asset issuer to user account if not already set
+    const receivedAssetAccount = await server.loadAccount(ReceivedAssetAccount.publicKey());
+    if (!receivedAssetAccount.balances.some(b => b.asset_code === ReceivedAssetObj.code && b.asset_issuer === ReceivedAssetObj.issuer)) {
+        const trustlineTransaction = new DiamSdk.TransactionBuilder(receivedAssetAccount, {
+            fee: await server.fetchBaseFee(),
+            networkPassphrase: DiamSdk.Networks.TESTNET,
+        })
+            .addOperation(
+                DiamSdk.Operation.changeTrust({
+                    asset: ReceivedAssetObj,
+                    limit: '100000',
+                })
+            )
+            .setTimeout(100)
+            .build();
+
+        trustlineTransaction.sign(ReceivedAssetAccount);
+        await server.submitTransaction(trustlineTransaction);
+        console.log(`Trustline Set`);
+    }
+    
+    const userAccount = await server.loadAccount(UserAccount.publicKey());
+        const sendAssetTransaction = new DiamSdk.TransactionBuilder(userAccount, {
+            fee: await server.fetchBaseFee(),
+            networkPassphrase: DiamSdk.Networks.TESTNET,
+        })
+            .addOperation(
+                DiamSdk.Operation.payment({
+                    destination: ReceivedAssetAccount.publicKey(),
+                    asset: SentAssetObj,
+                    amount: amount
+                })
+            )
+            .setTimeout(100)
+            .build();
+
+        sendAssetTransaction.sign(UserAccount);
+        const sendAssetResult = await server.submitTransaction(sendAssetTransaction);
+        const sendAssetTxHash = sendAssetResult.hash; // Get transaction hash
+
+        //Send ReceivedAsset from AssetAccount to UserAccount
+        const assetIssuerAccount = await server.loadAccount(ReceivedAssetAccount.publicKey());
+        const sendReceivedAssetTransaction = new DiamSdk.TransactionBuilder(assetIssuerAccount, {
+            fee: await server.fetchBaseFee(),
+            networkPassphrase: DiamSdk.Networks.TESTNET,
+        })
+            .addOperation(
+                DiamSdk.Operation.payment({
+                    destination: UserAccount.publicKey(),
+                    asset: ReceivedAssetObj,
+                    amount: (parseFloat(amount) * parseFloat(rate)).toFixed(7).toString()
+                })
+            )
+            .setTimeout(100)
+            .build();
+        sendReceivedAssetTransaction.sign(ReceivedAssetAccount);
+        const sendReceivedAssetResult = await server.submitTransaction(sendReceivedAssetTransaction);
+        const sendReceivedAssetTxHash = sendReceivedAssetResult.hash; // Get transaction hash
+
+        // Respond with enhanced JSON including transaction hashes
+        res.json({
+            message: 'Trustline set, and assets exchanged successfully',
+            AssetIssuer: {
+                publicKey: ReceivedAssetAccount.publicKey(),  
+            },
+            User: {
+                publicKey: UserAccount.publicKey(),
+            },
+            SentAsset: SentAsset,
+            ReceivedAsset: ReceivedAsset,
+            SentAssetAmount: amount,
+            ReceivedAssetAmount: (parseFloat(amount) * parseFloat(rate)).toFixed(7).toString(),
+            transactionHashes: {
+                SentAssetSend: sendAssetTxHash,
+                ReceivedAssetSend: sendReceivedAssetTxHash
+            }
+        });
+    }catch (error) {
+        console.error(`Error in trade-assets:`, error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+async function getBalances(req, res) {
+    try {
+        const { publicKey } = req.body;
+        const account = await server.loadAccount(publicKey);
+        const balances = account.balances.map(balance => ({
+            assetType: balance.asset_type,
+            assetCode: balance.asset_code,
+            balance: balance.balance
+        }));
+        res.json({ publicKey, balances });
+    } catch (error) {
+        console.error('Error fetching balances:', error);
+        res.status(500).json({ error: error.message });
+    }
+}
+const fetchTokenPrice = (req, res) => {
+    try {
+        const { asset } = req.body;
+        const price = DIAM_RATE[asset];
+
+        if (price !== undefined) {
+            res.json({
+                asset: asset,
+                price: price,
+            });
+        } else {
+            res.status(404).json({ error: `Price for asset ${asset} not found` });
+        }
+    } catch (error) {
+        console.error('Error fetching token price:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+const login = async (req, res) => {
+    try {
+        const { UserSecret } = req.body;
+        const userAccount = DiamSdk.Keypair.fromSecret(UserSecret);
+        res.json({
+            publicKey: userAccount.publicKey(),
+        });
+    } catch (error) {
+        console.error('Error in login:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
 app.post('/login', (req, res) => {
     login(req, res);
 });
@@ -352,6 +502,15 @@ app.post('/trade-for-assets', (req, res) => {
     // </TEsting>
 });
 
+app.post('/get-balances', (req, res) => {
+    getBalances(req, res);
+});
+app.post('/fetch-token-price', (req,res) => {
+    fetchTokenPrice(req,res);
+});
+app.post('/trade-assets', (req, res) => {
+    tradeAssets(req, res);
+});
 app.listen(port, () => {
     console.log(`Diamante backend listening at http://localhost:${port}`);
 });
