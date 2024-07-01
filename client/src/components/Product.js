@@ -80,7 +80,9 @@ function Product() {
       <img src={TshirtImg} />
       <br /> */}
       <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-      <button onClick={paymentHandler} className="button">UPI Payments</button>
+    <div className="container">
+      <button onClick={paymentHandler} className="buttonupi">UPI Payments</button>
+    </div>
     </div>
   );
 }
