@@ -31,11 +31,29 @@ const DIAM_RATE = {
     'DIAM': 1
 };
 
+app.get('/fetch-rate', (req, res) => {
+    const ticker = req.query.ticker;
+    const rate = DIAM_RATE[ticker];
+    if (rate) {
+        console.log(`Rate for ${ticker}: ${rate}`);
+        res.json({ rate });
+    } else {
+        console.error(`Rate for ${ticker} not found`);
+        res.status(404).json({ error: 'Rate not found' });
+    }
+});
+
 const tradeforDIAM = async (req, res) => {
     try {
         const { UserSecret, amount, asset } = req.body;
-        let rate = DIAM_RATE[asset];
-        console.log(`rate for ${asset}: ${rate}`);
+        const rate = DIAM_RATE[asset];
+        
+        if (!rate) {
+            return res.status(400).json({ message: 'Invalid asset' });
+        }
+
+        console.log(`Rate for ${asset}: ${rate}`);
+
         let assetSecret = '';
 
         // Asset secret setup (similar to existing code)
@@ -50,7 +68,7 @@ const tradeforDIAM = async (req, res) => {
         }
 
         // Console log for debugging purposes
-        console.log(`assetSecret: ${assetSecret}, UserSecret: ${UserSecret}, amount: ${amount}`);
+        console.log(`Asset Secret: ${assetSecret}, User Secret: ${UserSecret}, Amount: ${amount}`);
 
         // Initialize Keypair objects for asset and user accounts
         const AssetAccount = DiamSdk.Keypair.fromSecret(assetSecret);
@@ -60,8 +78,21 @@ const tradeforDIAM = async (req, res) => {
         const TestBTC = new DiamSdk.Asset('TestBTC', 'GD6ZQJAJDCKCOGB3MK2WVJIOLYWP4AWYZ3SDOFIAVUTSE3QVEDZDKTY6');
         const TestETH = new DiamSdk.Asset('TestETH', 'GDBJMYAYPDAA7CUQAXEJMIWBIR2WMQGGKWRLAVY434BGGW7TGJRT3R7N');
         const TestDOGE = new DiamSdk.Asset('TestDOGE', 'GCHR5OL2ITYGXNUF5T5J5NKTYLK5ESEBWUSY3N5MRGE2CNB3EZKDQOKS');
-        
-        let assetObj = asset === 'TestBTC' ? TestBTC : asset === 'TestETH' ? TestETH : TestDOGE;
+
+        let assetObj;
+        switch (asset) {
+            case 'TestBTC':
+                assetObj = TestBTC;
+                break;
+            case 'TestETH':
+                assetObj = TestETH;
+                break;
+            case 'TestDOGE':
+                assetObj = TestDOGE;
+                break;
+            default:
+                return res.status(400).json({ message: 'Invalid asset' });
+        }
 
         // Set up the trustline from asset issuer to user account if not already set
         const assetIssuerAccount = await server.loadAccount(AssetAccount.publicKey());
@@ -132,7 +163,7 @@ const tradeforDIAM = async (req, res) => {
         res.json({
             message: 'Trustline set, and assets exchanged successfully',
             AssetIssuer: {
-                publicKey: AssetAccount.publicKey(),  
+                publicKey: AssetAccount.publicKey(),
             },
             User: {
                 publicKey: UserAccount.publicKey(),
@@ -151,12 +182,17 @@ const tradeforDIAM = async (req, res) => {
     }
 };
 
-
 const tradeforAssets = async (req, res) => {
     try {
         const { UserSecret, amount, asset } = req.body;
-        let rate = DIAM_RATE[asset];
-        console.log(`rate for ${asset}: ${rate}`);
+        const rate = DIAM_RATE[asset];
+        
+        if (!rate) {
+            return res.status(400).json({ message: 'Invalid asset' });
+        }
+
+        console.log(`Rate for ${asset}: ${rate}`);
+
         let assetSecret = '';
 
         // Asset secret setup (similar to existing code)
@@ -171,7 +207,7 @@ const tradeforAssets = async (req, res) => {
         }
 
         // Console log for debugging purposes
-        console.log(`assetSecret: ${assetSecret}, UserSecret: ${UserSecret}, amount: ${amount}`);
+        console.log(`Asset Secret: ${assetSecret}, User Secret: ${UserSecret}, Amount: ${amount}`);
 
         // Initialize Keypair objects for asset and user accounts
         const AssetAccount = DiamSdk.Keypair.fromSecret(assetSecret);
@@ -181,8 +217,21 @@ const tradeforAssets = async (req, res) => {
         const TestBTC = new DiamSdk.Asset('TestBTC', 'GD6ZQJAJDCKCOGB3MK2WVJIOLYWP4AWYZ3SDOFIAVUTSE3QVEDZDKTY6');
         const TestETH = new DiamSdk.Asset('TestETH', 'GDBJMYAYPDAA7CUQAXEJMIWBIR2WMQGGKWRLAVY434BGGW7TGJRT3R7N');
         const TestDOGE = new DiamSdk.Asset('TestDOGE', 'GCHR5OL2ITYGXNUF5T5J5NKTYLK5ESEBWUSY3N5MRGE2CNB3EZKDQOKS');
-        
-        let assetObj = asset === 'TestBTC' ? TestBTC : asset === 'TestETH' ? TestETH : TestDOGE;
+
+        let assetObj;
+        switch (asset) {
+            case 'TestBTC':
+                assetObj = TestBTC;
+                break;
+            case 'TestETH':
+                assetObj = TestETH;
+                break;
+            case 'TestDOGE':
+                assetObj = TestDOGE;
+                break;
+            default:
+                return res.status(400).json({ message: 'Invalid asset' });
+        }
 
         // Set up the trustline from user to asset issuer (reverse of tradeforDIAM function)
         const userAccount = await server.loadAccount(UserAccount.publicKey());
@@ -253,7 +302,7 @@ const tradeforAssets = async (req, res) => {
         res.json({
             message: 'Trustline set, and assets exchanged successfully',
             AssetIssuer: {
-                publicKey: AssetAccount.publicKey(),  
+                publicKey: AssetAccount.publicKey(),
             },
             User: {
                 publicKey: UserAccount.publicKey(),
@@ -272,9 +321,6 @@ const tradeforAssets = async (req, res) => {
     }
 };
 
-
-
-
 app.post('/login', (req, res) => {
     login(req, res);
 });
@@ -282,9 +328,30 @@ app.post('/login', (req, res) => {
 app.post('/trade-for-DIAM', (req, res) => {
     tradeforDIAM(req, res);
 });
+
 app.post('/trade-for-assets', (req, res) => {
-    tradeforAssets(req, res);
+    // tradeforAssets(req, res);
+    // <TEsting>
+    const { UserSecret, amount, asset } = req.body;
+
+    // Assuming DIAM_RATE is defined and includes rates for TestBTC, TestETH, TestDOGE
+    const rate = DIAM_RATE[asset];
+  
+    if (rate !== undefined) {
+      // Process trade with the fetched rate
+      const valueInDIAM = amount * rate;
+      // Example response with transaction details
+      res.json({
+        transactionID: '<transaction_id>',
+        valueInDIAM: valueInDIAM,
+      });
+    } else {
+      // Handle case where asset rate is not found (should not ideally happen if DIAM_RATE is properly defined)
+      res.status(400).json({ error: 'Invalid asset or rate not defined.' });
+    }
+    // </TEsting>
 });
+
 app.listen(port, () => {
     console.log(`Diamante backend listening at http://localhost:${port}`);
 });

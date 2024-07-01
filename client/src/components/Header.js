@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../moralis-logo.svg';
+import Logo from '../logoTouse.png';
 import Eth from '../eth.svg';
 import Dropdown from './Dropdown'; // Import the Dropdown component
+import { paymentHandler } from '../paymentHandler.js';
 
 function Header(props) {
-  const { address, isConnected, connect } = props;
+  const { address, isConnected, openModal } = props;
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Ethereum');
   const [selectedIcon, setSelectedIcon] = useState(Eth);
@@ -25,10 +26,15 @@ function Header(props) {
       <div className="leftH">
         <img src={Logo} alt="logo" className="logo" />
         <Link to="/" className="link">
+          <div className="Auxo"><h1>Auxo</h1></div>
+        </Link>
+        
+        <Link to="/" className="link">
           <div className="headerItem">Swap</div>
         </Link>
         <Link to="/tokens" className="link">
-          <div className="headerItem">UPI Payments</div>
+          {/* <div className="link headerItem" onClick={paymentHandler}>UPI Payments</div> */}
+          <div className="headerItem" >UPI Payments</div>
         </Link>
       </div>
       <div className="rightH">
@@ -38,7 +44,10 @@ function Header(props) {
           <img src="/down-arrow.svg" alt="arrow" id="downarrow" />
           {isDropdownOpen && <Dropdown onSelect={handleSelect} />} {/* Pass the handler to Dropdown */}
         </div>
-        <div className="connectButton" onClick={connect}>
+        <div className="connectButton" onClick={()=>{
+           console.log('Connect Wallet button clicked');
+           openModal();
+        }}>
           {isConnected ? address.slice(0, 4) + '...' + address.slice(38) : 'Connect'}
         </div>
       </div>

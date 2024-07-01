@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Input, Popover, Radio, Modal, message } from "antd";
-import {
-  ArrowDownOutlined,
-  DownOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { Input, Popover, Radio, Modal, message, Menu, Dropdown } from "antd";
+import { DownOutlined, SettingOutlined } from "@ant-design/icons";
 import tokenList from "../tokenList.json";
 import axios from "axios";
-import { useSendTransaction, useWaitForTransaction } from "wagmi";
+import { useNavigate } from "react-router-dom";
+// Tsting imports
+import { toast } from 'react-toastify';
+// End of testing import
 
 function Swap(props) {
   const { address, isConnected } = props;
@@ -21,36 +20,139 @@ function Swap(props) {
   const [changeToken, setChangeToken] = useState(1);
   const [prices, setPrices] = useState(null);
   const [txDetails, setTxDetails] = useState({
-    to:null,
+    to: null,
     data: null,
     value: null,
-  }); 
+  });
+  const [swapButtonText, setSwapButtonText] = useState("To Diamante");
+  const [swapText, setSwapText] = useState("To Diamante");
+  const navigate = useNavigate();
 
-  const {data, sendTransaction} = useSendTransaction({
-    request: {
-      from: address,
-      to: String(txDetails.to),
-      data: String(txDetails.data),
-      value: String(txDetails.value),
+  // Start of const testing 
+  const [userSecret, setUserSecret] = useState('');
+  const [amount, setAmount] = useState('');
+  const [asset, setAsset] = useState('TestBTC');
+  const [userPublicKey, setUserPublicKey] = useState('');
+  const [transactionID, setTransactionID] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+
+  
+  // End of const testing
+
+  useEffect(() => {
+
+    // testing start
+    const storedUserSecret = localStorage.getItem('userSecret');
+    const storedKeepLoggedIn = localStorage.getItem('keepLoggedIn');
+
+    if (storedUserSecret && storedKeepLoggedIn === 'true') {
+      setUserSecret(storedUserSecret);
+      setLoggedIn(true);
+      setKeepLoggedIn(true);
+      fetchUserPublicKey(storedUserSecret); // Fetch user's public key if already logged in
     }
-  })
+    // testing ends
+    fetchPrices(tokenOne.address, tokenTwo.address);
+  }, []);
 
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
-  })
 
-  function handleSlippageChange(e) {
-    setSlippage(e.target.value);
-  }
+  // Main Testing Functions Starts
+  const fetchUserPublicKey = async (secret) => {
+    try {
+      const response = await axios.post('http://localhost:3009/login', {
+        UserSecret: secret,
+      });
 
-  function changeAmount(e) {
-    setTokenOneAmount(e.target.value);
-    if(e.target.value && prices){
-      setTokenTwoAmount((e.target.value * prices.ratio).toFixed(2))
-    }else{
-      setTokenTwoAmount(null);
+      console.log('Login successful:', response.data);
+      setUserPublicKey(response.data.publicKey);
+      toast.success('Login successful');
+    } catch (error) {
+      console.error('Error fetching public key:', error);
+      toast.error('Failed to fetch public key');
     }
-  }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:3009/login', {
+        UserSecret: userSecret,
+      });
+
+      console.log('Login successful:', response.data);
+      setUserPublicKey(response.data.publicKey);
+      setLoggedIn(true);
+
+      if (keepLoggedIn) {
+        localStorage.setItem('userSecret', userSecret);
+        localStorage.setItem('keepLoggedIn', 'true');
+      } else {
+        sessionStorage.setItem('userSecret', userSecret);
+        sessionStorage.setItem('keepLoggedIn', 'true');
+      }
+
+      toast.success('Login successful');
+    } catch (error) {
+      console.error('Error logging in:', error);
+      toast.error('Login failed');
+    }
+  };
+
+  const handleLogout = () => {
+    setUserSecret('');
+    setUserPublicKey('');
+    setLoggedIn(false);
+    setKeepLoggedIn(false);
+    localStorage.removeItem('userSecret');
+    localStorage.removeItem('keepLoggedIn');
+    sessionStorage.removeItem('userSecret');
+    sessionStorage.removeItem('keepLoggedIn');
+    toast.info('Logged out');
+  };
+
+  const handleTradeForDIAM = async () => {
+    try {
+      const response = await axios.post('http://localhost:3009/trade-for-DIAM', {
+        UserSecret: userSecret,
+        amount: amount,
+        asset: asset, // Use the dynamic asset state
+      });
+  
+      console.log('Trade successful:', response.data);
+      setTransactionID(response.data.transactionHashes.assetSend);
+      toast.success('Trade successful');
+    } catch (error) {
+      console.error('Error trading for DIAM:', error);
+      toast.error('Trade failed');
+    }
+  };
+  
+  const handleTradeForAssets = async () => {
+    try {
+      const response = await axios.post('http://localhost:3009/trade-for-assets', {
+        UserSecret: userSecret,
+        amount: amount,
+        asset: asset, // Use the dynamic asset state
+      });
+  
+      console.log('Trade successful:', response.data);
+      setTransactionID(response.data.transactionID);
+      toast.success('Trade successful');
+    } catch (error) {
+      console.error('Error trading for assets:', error);
+      toast.error('Trade failed');
+    }
+  };
+
+
+  const handleSelectChange = (e) => {
+    const selectedTicker = e.target.value;
+    const selectedToken = tokenList.find(token => token.ticker === selectedTicker);
+    const tokenIndex = tokenList.indexOf(selectedToken);
+    modifyToken(tokenIndex);
+  };
+
+  // End of Main Testing Functions 
 
   function switchTokens() {
     setPrices(null);
@@ -67,112 +169,77 @@ function Swap(props) {
     setChangeToken(asset);
     setIsOpen(true);
   }
+// TESTINF MODIFYTOKENS
+function modifyToken(index) {
+  setPrices(null);
+  setTokenOneAmount(null);
+  setTokenTwoAmount(null);
+  const selectedToken = tokenList[index];
 
-  function modifyToken(i){
-    setPrices(null);
-    setTokenOneAmount(null);
-    setTokenTwoAmount(null);
-    if (changeToken === 1) {
-      setTokenOne(tokenList[i]);
-      fetchPrices(tokenList[i].address, tokenTwo.address)
-    } else {
-      setTokenTwo(tokenList[i]);
-      fetchPrices(tokenOne.address, tokenList[i].address)
-    }
-    setIsOpen(false);
+  if (changeToken === 1) {
+    setTokenOne(tokenList[index]);
+    fetchPrices(tokenList[index].address, tokenTwo.address);
+  } else {
+    setTokenTwo(tokenList[index]);
+    fetchPrices(tokenOne.address, tokenList[index].address);
   }
-
-  async function fetchPrices(one, two){
-
-      const res = await axios.get(`http://localhost:3001/tokenPrice`, {
-        params: {addressOne: one, addressTwo: two}
-      })
-
-      
-      setPrices(res.data)
-  }
+  setAsset(selectedToken.ticker); // Set asset ticker here
+  setIsOpen(false);
+}
 
 
+// END OF TESTING MODIFYTOKENS
 
-  async function fetchDexSwap() {
+  // function modifyToken(i) {
+  //   setPrices(null);
+  //   setTokenOneAmount(null);
+  //   setTokenTwoAmount(null);
+  //   if (changeToken === 1) {
+  //     setTokenOne(tokenList[i]);
+  //     fetchPrices(tokenList[i].address, tokenTwo.address);
+  //   } else {
+  //     setTokenTwo(tokenList[i]);
+  //     fetchPrices(tokenOne.address, tokenList[i].address);
+  //   }
+  //   setIsOpen(false);
+  // }
+
+  async function fetchPrices(one, two) {
     try {
-      const response = await axios.post('http://localhost:3001/fetchDexSwap', {
-        tokenOne: { address: tokenOne.address, decimals: tokenOne.decimals },
-        tokenTwo: { address: tokenTwo.address, decimals: tokenTwo.decimals },
-        tokenOneAmount,
-        address,
-        slippage,
+      const res = await axios.get("http://localhost:3001/tokenPrice", {
+        params: { addressOne: one, addressTwo: two },
       });
-
-      const data = response.data;
-      console.log('Transaction Details:', data.txDetails);
-      console.log('Token Two Amount:', data.tokenTwoAmount);
-
-      setTxDetails(data.txDetails);
-      setTokenTwoAmount(data.tokenTwoAmount);
+      setPrices(res.data);
     } catch (error) {
-      console.error('Error fetching Dex swap:', error);
-      messageApi.open({
-        type: 'error',
-        content: 'Error fetching Dex swap',
-        duration: 1.5,
-      });
+      console.error("Error fetching prices:", error);
     }
   }
 
-
-  useEffect(()=>{
-
-    fetchPrices(tokenList[0].address, tokenList[1].address)
-
-  }, [])
-
-  useEffect(()=>{
-
-      if(txDetails.to && isConnected){
-        sendTransaction();
-      }
-  }, [txDetails])
-
-  useEffect(()=>{
-
-    messageApi.destroy();
-
-    if(isLoading){
-      messageApi.open({
-        type: 'loading',
-        content: 'Transaction is Pending...',
-        duration: 0,
-      })
-    }    
-
-  },[isLoading])
-
-  useEffect(()=>{
-    messageApi.destroy();
-    if(isSuccess){
-      messageApi.open({
-        type: 'success',
-        content: 'Transaction Successful',
-        duration: 1.5,
-      })
-    }else if(txDetails.to){
-      messageApi.open({
-        type: 'error',
-        content: 'Transaction Failed',
-        duration: 1.50,
-      })
+  const handleMenuClick = (e) => {
+    if (e.key === "switch") {
+      switchTokens();
+      setSwapButtonText("To Diamante");
+      setSwapText("To Diamante");
+    } else if (e.key === "other") {
+      navigate("/to-other");
+    } else if (e.key === "diamante") {
+      setSwapButtonText("To Diamante");
+      setSwapText("To Diamante");
     }
+  };
 
-
-  },[isSuccess])
-
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="switch">To Diamante</Menu.Item>
+      <Menu.Item key="other">To Others</Menu.Item>
+    </Menu>
+  );
 
   const settings = (
     <>
       <div>Slippage Tolerance</div>
       <div>
-        <Radio.Group value={slippage} onChange={handleSlippageChange}>
+        <Radio.Group value={slippage} onChange={(e) => setSlippage(e.target.value)}>
           <Radio.Button value={0.5}>0.5%</Radio.Button>
           <Radio.Button value={2.5}>2.5%</Radio.Button>
           <Radio.Button value={5}>5.0%</Radio.Button>
@@ -185,32 +252,47 @@ function Swap(props) {
     <>
       {contextHolder}
       <Modal
-        open={isOpen}
+        visible={isOpen}
         footer={null}
         onCancel={() => setIsOpen(false)}
         title="Select a token"
-      > 
+      >
         <div className="modalContent">
-          {tokenList?.map((e, i) => {
-            return (
-              <div
-                className="tokenChoice"
-                key={i}
-                onClick={() => modifyToken(i)}
-              >
-                <img src={e.img} alt={e.ticker} className="tokenLogo" />
-                <div className="tokenChoiceNames">
-                  <div className="tokenName">{e.name}</div>
-                  <div className="tokenTicker">{e.ticker}</div>
-                </div>
+          {/* testing */}
+        {tokenList.map((token, index) => (
+          <div
+            className="tokenChoice"
+            key={index}
+            onClick={() => modifyToken(index)}
+          >
+            <img src={token.img} alt={token.ticker} className="tokenLogo" />
+            <div className="tokenChoiceNames">
+              <div className="tokenName">{token.name}</div>
+              <div className="tokenTicker">{token.ticker}</div>
+            </div>
+          </div>
+        ))}
+          {/* end of testing */}
+
+          {/* {tokenList?.map((e, i) => (
+            <div className="tokenChoice" key={i} onClick={() => modifyToken(i)}>
+              <img src={e.img} alt={e.ticker} className="tokenLogo" />
+              <div className="tokenChoiceNames">
+                <div className="tokenName">{e.name}</div>
+                <div className="tokenTicker">{e.ticker}</div>
               </div>
-            );
-          })}
+            </div>
+          ))} */}
         </div>
       </Modal>
       <div className="tradeBox">
         <div className="tradeBoxHeader">
-          <h4>Swap</h4>
+          <Dropdown overlay={menu} trigger={["click"]}>
+            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+              {swapText} <DownOutlined />
+            </a>
+          </Dropdown>
+          
           <Popover
             content={settings}
             title="Settings"
@@ -223,26 +305,25 @@ function Swap(props) {
         <div className="inputs">
           <Input
             placeholder="0"
-            value={tokenOneAmount}
-            onChange={changeAmount}
-            disabled={!prices}
+            type="text"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            
           />
-          <Input placeholder="0" value={tokenTwoAmount} disabled={true} />
-          <div className="switchButton" onClick={switchTokens}>
-            <ArrowDownOutlined className="switchArrow" />
-          </div>
           <div className="assetOne" onClick={() => openModal(1)}>
             <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo" />
             {tokenOne.ticker}
             <DownOutlined />
           </div>
-          <div className="assetTwo" onClick={() => openModal(2)}>
-            <img src={tokenTwo.img} alt="assetOneLogo" className="assetLogo" />
-            {tokenTwo.ticker}
-            <DownOutlined />
-          </div>
         </div>
-        <div className="swapButton" disabled={!tokenOneAmount || !isConnected} onClick={fetchDexSwap}>Swap</div>
+     
+        <div
+          className="swapButton"
+          onClick={handleTradeForDIAM}
+        >
+          {swapButtonText === "To Diamante" && "Convert"}
+        </div>
+        <p className="bg-white">Your Public Key: {userPublicKey}</p>
       </div>
     </>
   );

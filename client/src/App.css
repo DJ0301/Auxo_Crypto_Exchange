@@ -12,8 +12,8 @@ header {
 }
 
 .logo{
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   padding-right: 20px;
 }
 
@@ -29,13 +29,23 @@ header {
   align-items: center;
   gap: 20px;
 }
-
+.Auxo{
+  padding-right: 20px;
+}
 .rightH {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 20px;
 }
+
+.ant-dropdown-link{
+  margin-bottom: 30px;
+  margin-top: 15px;
+  text-align: center;
+  top: 6px;
+}
+
 
 .headerItem {
   padding: 10px;
@@ -231,7 +241,7 @@ header {
   font-weight: bold;
   transition: 0.3s;
   margin-bottom: 30px;
-  margin-top: 8px;
+  margin-top: 20px;
 }
 
 .swapButton[disabled] {
@@ -307,4 +317,38 @@ header {
 }
 .webName{
   color: white;
+}
+
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(247, 247, 247, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  height: 700px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
 }

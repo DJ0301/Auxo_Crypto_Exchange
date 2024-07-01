@@ -1,11 +1,8 @@
-import './Product.css';
-
-function Product() {
-  const amount = 500;
-  const currency = "INR";
-  const receiptId = "qwsaq1";
-
-  const paymentHandler = async (e) => {
+export const paymentHandler = async (e) => {
+    const amount = 500;
+    const currency = "INR";
+    const receiptId = "qwsaq1";
+  
     const response = await fetch("http://localhost:5001/order", {
       method: "POST",
       body: JSON.stringify({
@@ -19,20 +16,20 @@ function Product() {
     });
     const order = await response.json();
     console.log(order);
-
+  
     var options = {
-      key: "rzp_test_aqq5IHusp1A3ya", // Enter the Key ID generated from the Dashboard
-      amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      key: "rzp_test_aqq5IHusp1A3ya",
+      amount,
       currency,
-      name: "AUXO", //your business name
+      name: "AUXO",
       description: "Test Transaction",
       image: "/logoTrans.png",
-      order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      order_id: order.id,
       handler: async function (response) {
         const body = {
           ...response,
         };
-
+  
         const validateRes = await fetch(
           "http://localhost:5001/order/validate",
           {
@@ -47,16 +44,15 @@ function Product() {
         console.log(jsonRes);
       },
       prefill: {
-        //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-        name: "Web Dev Matrix", //your customer's name
+        name: "Web Dev Matrix",
         email: "webdevmatrix@example.com",
-        contact: "9000000000", //Provide the customer's phone number for better conversion rates
+        contact: "9000000000",
       },
       notes: {
         address: "Razorpay Corporate Office",
       },
       theme: {
-        color: "#243056",
+        color: "#5981F3",
       },
     };
     var rzp1 = new window.Razorpay(options);
@@ -72,20 +68,4 @@ function Product() {
     rzp1.open();
     e.preventDefault();
   };
-
-  return (
-    <div className="product">
-      {/* <h2>Tshirt</h2>
-      <p>Solid blue cotton Tshirt</p>
-      <img src={TshirtImg} />
-      <br /> */}
-      <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-      <div className='container'>
-         <button onClick={paymentHandler} className="button4">UPI Payments</button>
-      </div>
-     
-    </div>
-  );
-}
-
-export default Product;
+  
