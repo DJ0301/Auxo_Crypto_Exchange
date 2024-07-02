@@ -1,48 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Input, Popover, Radio, Modal, message, Menu, Dropdown } from "antd";
-import { DownOutlined, SettingOutlined } from "@ant-design/icons";
-import tokenList from "../tokenList.json";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-// Tsting imports
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { toast } from 'react-toastify';
-// End of testing import
+import './Swap.css'
 
-function Swap(props) {
-  const { address, isConnected } = props;
-  const [messageApi, contextHolder] = message.useMessage();
-  const [slippage, setSlippage] = useState(2.5);
-  const [tokenOneAmount, setTokenOneAmount] = useState(null);
-  const [tokenTwoAmount, setTokenTwoAmount] = useState(null);
-  const [tokenOne, setTokenOne] = useState(tokenList[0]);
-  const [tokenTwo, setTokenTwo] = useState(tokenList[1]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [changeToken, setChangeToken] = useState(1);
-  const [prices, setPrices] = useState(null);
-  const [txDetails, setTxDetails] = useState({
-    to: null,
-    data: null,
-    value: null,
-  });
-  const [swapButtonText, setSwapButtonText] = useState("To Diamante");
-  const [swapText, setSwapText] = useState("To Diamante");
-  const navigate = useNavigate();
 
-  // Start of const testing 
+const Swap = ({setUserPublicKey}) => {
   const [userSecret, setUserSecret] = useState('');
   const [amount, setAmount] = useState('');
   const [asset, setAsset] = useState('TestBTC');
-  const [userPublicKey, setUserPublicKey] = useState('');
+  const [userPublicKey, setUserPublicKeyLocal] = useState('');
   const [transactionID, setTransactionID] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
-
-  
-  // End of const testing
+  const [tokenPrice, setTokenPrice] = useState(null);
+  const [receiveAmount, setReceiveAmount] = useState(0);
+  const [isTradeForDiam, setIsTradeForDiam] = useState(true); // State to toggle between trade types
+  const [accountBalances, setAccountBalances] = useState({});
+  const [insufficientFunds, setInsufficientFunds] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // State to manage loading during transaction processing
+  const [showLoginPopup, setShowLoginPopup] = useState(false); // State to manage login popup visibility
 
   useEffect(() => {
-
-    // testing start
     const storedUserSecret = localStorage.getItem('userSecret');
     const storedKeepLoggedIn = localStorage.getItem('keepLoggedIn');
 
@@ -52,24 +31,100 @@ function Swap(props) {
       setKeepLoggedIn(true);
       fetchUserPublicKey(storedUserSecret); // Fetch user's public key if already logged in
     }
-    // testing ends
-    fetchPrices(tokenOne.address, tokenTwo.address);
   }, []);
 
+  useEffect(() => {
+    if (loggedIn && userPublicKey) {
+      fetchAccountBalances(userPublicKey);
+    }
+  }, [loggedIn, userPublicKey]);
 
-  // Main Testing Functions Starts
+  useEffect(() => {
+    if (asset) {
+      fetchTokenPrice(asset);
+    }
+  }, [asset]);
+
+  useEffect(() => {
+    if (tokenPrice && amount) {
+      if (isTradeForDiam) {
+        setReceiveAmount(amount / tokenPrice);
+      } else {
+        setReceiveAmount(amount * tokenPrice);
+      }
+    } else {
+      setReceiveAmount(0);
+    }
+  }, [amount, tokenPrice, isTradeForDiam]);
+
+  useEffect(() => {
+    if (amount && accountBalances[asset] !== undefined) {
+      const assetBalance = parseFloat(accountBalances[asset]);
+      const diamBalance = parseFloat(accountBalances['DIAM']);
+
+      if (isTradeForDiam) {
+        if (amount > assetBalance) {
+          setInsufficientFunds(true);
+        } else {
+          setInsufficientFunds(false);
+        }
+      } else {
+        if (receiveAmount > diamBalance) {
+          setInsufficientFunds(true);
+        } else {
+          setInsufficientFunds(false);
+        }
+      }
+    }
+  }, [amount, asset, accountBalances, receiveAmount, isTradeForDiam]);
+
   const fetchUserPublicKey = async (secret) => {
     try {
       const response = await axios.post('http://localhost:3009/login', {
         UserSecret: secret,
       });
 
-      console.log('Login successful:', response.data);
+      setUserPublicKeyLocal(response.data.publicKey);
       setUserPublicKey(response.data.publicKey);
       toast.success('Login successful');
     } catch (error) {
       console.error('Error fetching public key:', error);
       toast.error('Failed to fetch public key');
+    }
+  };
+
+  const fetchTokenPrice = async (asset) => {
+    try {
+      const response = await axios.post('http://localhost:3009/fetch-token-price', {
+        asset: asset,
+      });
+
+      setTokenPrice(response.data.price);
+    } catch (error) {
+      console.error('Error fetching token price:', error);
+      toast.error('Failed to fetch token price');
+    }
+  };
+
+  const fetchAccountBalances = async (publicKey) => {
+    try {
+      const response = await axios.post(`http://localhost:3009/get-balances`, {
+        publicKey: publicKey,
+      });
+      
+      const balances = response.data.balances.reduce((acc, balance) => {
+        if (balance.assetCode) {
+          acc[balance.assetCode] = balance.balance;
+        } else {
+          acc['DIAM'] = balance.balance; // Assuming 'native' balance represents DIAM
+        }
+        return acc;
+      }, {});
+  
+      setAccountBalances(balances);
+    } catch (error) {
+      console.error('Error fetching account balances:', error);
+      toast.error('Failed to fetch account balances');
     }
   };
 
@@ -79,8 +134,8 @@ function Swap(props) {
         UserSecret: userSecret,
       });
 
-      console.log('Login successful:', response.data);
-      setUserPublicKey(response.data.publicKey);
+      setUserPublicKeyLocal(response.data.publicKey); // Update local state
+      setUserPublicKey(response.data.publicKey); // Pass to parent component
       setLoggedIn(true);
 
       if (keepLoggedIn) {
@@ -91,6 +146,7 @@ function Swap(props) {
         sessionStorage.setItem('keepLoggedIn', 'true');
       }
 
+      setShowLoginPopup(false); // Hide the login popup after successful login
       toast.success('Login successful');
     } catch (error) {
       console.error('Error logging in:', error);
@@ -110,221 +166,155 @@ function Swap(props) {
     toast.info('Logged out');
   };
 
-  const handleTradeForDIAM = async () => {
+  const handleSwap = () => {
+    setShowConfirmation(true); // Display confirmation dialog
+  };
+
+  const confirmSwap = async () => {
+    setIsProcessing(true); // Set processing state to true while transaction is being processed
+
     try {
-      const response = await axios.post('http://localhost:3009/trade-for-DIAM', {
+      const endpoint = isTradeForDiam ? 'trade-for-DIAM' : 'trade-for-assets';
+      const response = await axios.post(`http://localhost:3009/${endpoint}`, {
         UserSecret: userSecret,
         amount: amount,
-        asset: asset, // Use the dynamic asset state
+        asset: asset,
       });
-  
-      console.log('Trade successful:', response.data);
-      setTransactionID(response.data.transactionHashes.assetSend);
+
+      setTransactionID(response.data.transactionID || response.data.transactionHashes.assetSend);
       toast.success('Trade successful');
     } catch (error) {
-      console.error('Error trading for DIAM:', error);
+      console.error('Error trading:', error);
       toast.error('Trade failed');
-    }
-  };
-  
-  const handleTradeForAssets = async () => {
-    try {
-      const response = await axios.post('http://localhost:3009/trade-for-assets', {
-        UserSecret: userSecret,
-        amount: amount,
-        asset: asset, // Use the dynamic asset state
-      });
-  
-      console.log('Trade successful:', response.data);
-      setTransactionID(response.data.transactionID);
-      toast.success('Trade successful');
-    } catch (error) {
-      console.error('Error trading for assets:', error);
-      toast.error('Trade failed');
+    } finally {
+      setIsProcessing(false); // Set processing state back to false after transaction attempt
+      setShowConfirmation(false); // Hide confirmation dialog after transaction attempt
     }
   };
 
-
-  const handleSelectChange = (e) => {
-    const selectedTicker = e.target.value;
-    const selectedToken = tokenList.find(token => token.ticker === selectedTicker);
-    const tokenIndex = tokenList.indexOf(selectedToken);
-    modifyToken(tokenIndex);
-  };
-
-  // End of Main Testing Functions 
-
-  function switchTokens() {
-    setPrices(null);
-    setTokenOneAmount(null);
-    setTokenTwoAmount(null);
-    const one = tokenOne;
-    const two = tokenTwo;
-    setTokenOne(two);
-    setTokenTwo(one);
-    fetchPrices(two.address, one.address);
-  }
-
-  function openModal(asset) {
-    setChangeToken(asset);
-    setIsOpen(true);
-  }
-// TESTINF MODIFYTOKENS
-function modifyToken(index) {
-  setPrices(null);
-  setTokenOneAmount(null);
-  setTokenTwoAmount(null);
-  const selectedToken = tokenList[index];
-
-  if (changeToken === 1) {
-    setTokenOne(tokenList[index]);
-    fetchPrices(tokenList[index].address, tokenTwo.address);
-  } else {
-    setTokenTwo(tokenList[index]);
-    fetchPrices(tokenOne.address, tokenList[index].address);
-  }
-  setAsset(selectedToken.ticker); // Set asset ticker here
-  setIsOpen(false);
-}
-
-
-// END OF TESTING MODIFYTOKENS
-
-  // function modifyToken(i) {
-  //   setPrices(null);
-  //   setTokenOneAmount(null);
-  //   setTokenTwoAmount(null);
-  //   if (changeToken === 1) {
-  //     setTokenOne(tokenList[i]);
-  //     fetchPrices(tokenList[i].address, tokenTwo.address);
-  //   } else {
-  //     setTokenTwo(tokenList[i]);
-  //     fetchPrices(tokenOne.address, tokenList[i].address);
-  //   }
-  //   setIsOpen(false);
-  // }
-
-  async function fetchPrices(one, two) {
-    try {
-      const res = await axios.get("http://localhost:3001/tokenPrice", {
-        params: { addressOne: one, addressTwo: two },
-      });
-      setPrices(res.data);
-    } catch (error) {
-      console.error("Error fetching prices:", error);
-    }
-  }
-
-  const handleMenuClick = (e) => {
-    if (e.key === "switch") {
-      switchTokens();
-      setSwapButtonText("To Diamante");
-      setSwapText("To Diamante");
-    } else if (e.key === "other") {
-      navigate("/to-other");
-    } else if (e.key === "diamante") {
-      setSwapButtonText("To Diamante");
-      setSwapText("To Diamante");
+  const formatCurrentPrice = () => {
+    if (isTradeForDiam) {
+      return `${amount} ${asset} for ${(amount / tokenPrice).toFixed(2)} DIAM`;
+    } else {
+      return `${amount} DIAM for ${(amount * tokenPrice).toFixed(2)} ${asset}`;
     }
   };
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="switch">To Diamante</Menu.Item>
-      <Menu.Item key="other">To Others</Menu.Item>
-    </Menu>
-  );
-
-  const settings = (
-    <>
-      <div>Slippage Tolerance</div>
-      <div>
-        <Radio.Group value={slippage} onChange={(e) => setSlippage(e.target.value)}>
-          <Radio.Button value={0.5}>0.5%</Radio.Button>
-          <Radio.Button value={2.5}>2.5%</Radio.Button>
-          <Radio.Button value={5}>5.0%</Radio.Button>
-        </Radio.Group>
-      </div>
-    </>
-  );
 
   return (
     <>
-      {contextHolder}
-      <Modal
-        visible={isOpen}
-        footer={null}
-        onCancel={() => setIsOpen(false)}
-        title="Select a token"
-      >
-        <div className="modalContent">
-          {/* testing */}
-        {tokenList.map((token, index) => (
-          <div
-            className="tokenChoice"
-            key={index}
-            onClick={() => modifyToken(index)}
-          >
-            <img src={token.img} alt={token.ticker} className="tokenLogo" />
-            <div className="tokenChoiceNames">
-              <div className="tokenName">{token.name}</div>
-              <div className="tokenTicker">{token.ticker}</div>
+    
+        {loggedIn && (
+          <div className="tradeBox">
+            <div className="tradeBoxHeader">
+            <div className="onlineCircle"></div>
+              <p>{userPublicKey.slice(0, 15)}....</p>
             </div>
-          </div>
-        ))}
-          {/* end of testing */}
-
-          {/* {tokenList?.map((e, i) => (
-            <div className="tokenChoice" key={i} onClick={() => modifyToken(i)}>
-              <img src={e.img} alt={e.ticker} className="tokenLogo" />
-              <div className="tokenChoiceNames">
-                <div className="tokenName">{e.name}</div>
-                <div className="tokenTicker">{e.ticker}</div>
+            <div>
+              <div className='radio-inputs'>
+                <label className="radio">
+                <input
+                  type="radio"
+                  name="radio"
+                  checked={isTradeForDiam}
+                  onChange={() => setIsTradeForDiam(true)}
+                />
+                <span class="name">Trade for DIAM</span>
+              </label >
+              <label className="radio">
+                <input
+                  type="radio"
+                  name="radio"
+                  checked={!isTradeForDiam}
+                  onChange={() => setIsTradeForDiam(false)}
+                />
+               <span class="name">Trade for Assets</span> 
+              </label>
+              </div>
+              
+              <div className="inputs">
+                <input
+                  className="texting"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Amount"
+                />
+                <select
+                  value={asset}
+                  onChange={(e) => setAsset(e.target.value)}
+                  className='Dropdown'
+                >
+                  <option value="TestBTC">BTC</option>
+                  <option value="TestETH">ETH</option>
+                  <option value="TestDOGE">DOGE</option>
+                </select>
+                <div className="assetOne">
+                  <p className='assetOneText'> Current Price: {formatCurrentPrice()}</p>
+                </div>
+                
+               
+                <div className='ButtonFix'>
+                   <button
+                  className="swapButton"
+                  onClick={handleSwap}
+                  disabled={!amount || !tokenPrice || insufficientFunds}
+                >
+                  Swap
+                </button> 
+                </div>
+               {insufficientFunds && (
+                  <p className="insufficientFundsMessage">Insufficient Funds</p>
+                )}
+                <div className="assetTwo">
+                  <p className='assetTwoText'>
+                    You will receive: {receiveAmount.toFixed(2)}{' '}
+                    {isTradeForDiam ? 'DIAM' : asset}
+                  </p>
+                </div>
               </div>
             </div>
-          ))} */}
-        </div>
-      </Modal>
-      <div className="tradeBox">
-        <div className="tradeBoxHeader">
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-              {swapText} <DownOutlined />
-            </a>
-          </Dropdown>
-          
-          <Popover
-            content={settings}
-            title="Settings"
-            trigger="click"
-            placement="bottomRight"
-          >
-            <SettingOutlined className="cog" />
-          </Popover>
-        </div>
-        <div className="inputs">
-          <Input
-            placeholder="0"
-            type="text"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            <div className="accountBalances">
+              <h3>Account Balances</h3>
+              
+                <p>{asset}: {accountBalances[asset] || 'Loading...'}</p>
+                <p>DIAM: {accountBalances['DIAM'] || 'Loading...'}</p>
+                {/* Add additional asset balances here */}
+             
+            </div>
             
-          />
-          <div className="assetOne" onClick={() => openModal(1)}>
-            <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo" />
-            {tokenOne.ticker}
-            <DownOutlined />
+        {transactionID && (
+          <div className='trasactionID'>
+            <p>Transaction ID: {transactionID}</p>
+            <a
+              href={`https://testnetexplorer.diamcircle.io/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className='ViewTestNet'
+            >
+              View Testnet Explorer
+            </a>
+            
           </div>
-        </div>
-     
-        <div
-          className="swapButton"
-          onClick={handleTradeForDIAM}
-        >
-          {swapButtonText === "To Diamante" && "Convert"}
-        </div>
-        <p className="bg-white">Your Public Key: {userPublicKey}</p>
-      </div>
+        )}
+          </div>
+        )}
+
+
+        {showConfirmation && (
+          <div className="confirmationPopup">
+            <p>Confirm your transaction:</p>
+            <p>{formatCurrentPrice()}</p>
+            {isProcessing ? (
+              <p>Processing...</p>
+            ) : (
+              <>
+                <button className="confirmbtn" onClick={confirmSwap}>Confirm</button>
+                <button className="confirmbtn" onClick={() => setShowConfirmation(false)}>Cancel</button>
+              </>
+            )}
+          </div>
+        )}
     </>
   );
 }

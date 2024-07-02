@@ -1,0 +1,260 @@
+.tradeBox {
+    width: 500px;
+    background-color: #0E111B;
+    border: 2px solid #21273a;
+    min-height: 100px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; /* Center align the content */
+    padding: 30px;
+    animation: glow 2s infinite;
+    margin-top: -60px;
+  }
+  
+  .tradeBoxHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: -30px; 
+  }
+  .onlineCircle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: green;
+    margin-right: 10px; /* Adjust spacing between circle and text */
+  }
+  
+  .RadioSpacing {
+    display: flex;
+    justify-content: center; /* Center align radio buttons */
+    margin-bottom: 20px;
+  }
+  
+  .radioLabel {
+    margin-right: 20px; /* Adjust spacing between radio buttons */
+  }
+  
+  .inputs {
+    text-align: center; /* Center align inputs */
+    margin-bottom: 20px;
+  }
+  
+  .texting {
+    border: 2px solid #ffff;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 250px; /* Adjust width as needed */
+  }
+  
+  .selecting {
+    border: 2px solid #ffff;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 200px; /* Adjust width as needed */
+  }
+  
+  .assetOne {
+    text-align: center; /* Center align text */
+    margin-bottom: 10px;
+    margin-top: 16px;
+    margin-right: -15px;
+    width: 300px;
+    font-size: 15px;
+    background-color: transparent;
+
+
+  }
+  .assetTwo{
+    text-align: center; /* Center align text */
+    margin-bottom: 10px;
+    margin-top: 30px;
+    margin-right: -45px;
+    width: 300px;
+    font-size: 15px;
+    background-color: transparent;
+    
+  }
+  
+  .insufficientFundsMessage {
+    text-align: center; /* Center align text */
+    top: 20px;
+    color: red; /* Adjust color for emphasis */
+  }
+  
+  .swapButton {
+    margin-top: 50px;
+    padding: 10px 20px;
+    background-color:#1f006d; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .swapButton:hover {
+    background-color: #3000a9; /* Darker green on hover */
+  }
+  
+  .accountBalances {
+    text-align: center; /* Center align text */
+    margin-top: 20px;
+  }
+
+  
+  .radio-inputs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    background-color: #000647;
+    box-sizing: border-box;
+    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+    padding: 0.25rem;
+    width: 370px;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .radio-inputs .radio {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+  
+  .radio-inputs .radio input {
+    display: none;
+    
+  }
+  
+  .radio-inputs .radio .name {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: none;
+    padding: .5rem 0;
+    color: rgb(248, 248, 248);
+    transition: all .15s ease-in-out;
+  }
+  
+  .radio-inputs .radio input:checked + .name {
+    background-color: #1f006d;
+    font-weight: 600;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Webkit browsers */
+  margin: 0; /* Remove default margin */
+}
+
+.Dropdown{
+    width: 90px;
+    height: 38px;
+    background: #110153;
+    border-color: white;
+    color: white;
+    border-width: 2px;
+}
+.accountBalances {
+  margin-top: 20px; /* Adjust top margin as needed */
+  text-align: center; /* Align text to the right */
+  background: #000;
+  width: 400px;
+  border-radius: 20px;
+}
+.buttonFix{
+  display: flex;
+}
+.confirmationPopup{
+  background-color: #1f006d;
+  height: 150px;
+  animation: glow 2s infinite;
+  border: 2px solid #21273a;
+}
+.ViewTestNet{
+  bottom:10px;
+}
+
+.confirmationPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(0, 10, 63);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure it appears above other elements */
+  text-align: center;
+  
+}
+
+.confirmationPopup button {
+  margin: 10px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999; /* Ensure it appears below the popup but above other content */
+}
+
+.confirmbtn {
+  cursor: pointer;
+  position: relative;
+  padding: 10px 24px;
+  font-size: 14px;
+  color: rgb(255, 255, 255);
+  border: 2px solid rgb(0, 23, 126);
+  border-radius: 34px;
+  background-color: transparent;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  overflow: hidden;
+  width: 120px;
+  height: 45px;
+}
+
+.confirmbtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 50px;
+  height: 50px;
+  border-radius: inherit;
+  scale: 0;
+  z-index: -1;
+  background-color: rgb(32, 0, 136);
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.confirmbtn:hover::before {
+  scale: 3;
+}
+
+.confirmbtn:hover {
+  color: #ffffff;
+  scale: 1.1;
+  box-shadow: 0 0px 20px rgba(193, 163, 98,0.4);
+}
+
+.confirmbtn:active {
+  scale: 1;
+}
+
+.confirmationPopup p{
+  font-weight: bold;
+}
+
+

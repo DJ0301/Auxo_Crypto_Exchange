@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-import './AssetTrading.css';
-
 const AssetTrading = () => {
   const [userSecret, setUserSecret] = useState('');
   const [amount, setAmount] = useState('');
@@ -107,10 +105,10 @@ const AssetTrading = () => {
 
   const fetchAccountBalances = async (publicKey) => {
     try {
-      const response = await axios.post('http://localhost:3009/get-balances', {
+      const response = await axios.post(`http://localhost:3009/get-balances`, {
         publicKey: publicKey,
       });
-
+      
       const balances = response.data.balances.reduce((acc, balance) => {
         if (balance.assetCode) {
           acc[balance.assetCode] = balance.balance;
@@ -119,7 +117,7 @@ const AssetTrading = () => {
         }
         return acc;
       }, {});
-
+  
       setAccountBalances(balances);
     } catch (error) {
       console.error('Error fetching account balances:', error);
@@ -310,6 +308,7 @@ const AssetTrading = () => {
             </div>
           </div>
         )}
+
         {transactionID && (
           <div>
             <p>Transaction ID: {transactionID}</p>
@@ -326,6 +325,7 @@ const AssetTrading = () => {
             </p>
           </div>
         )}
+
         {showConfirmation && (
           <div className="confirmationPopup">
             <p>Confirm your transaction:</p>
