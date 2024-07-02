@@ -5,7 +5,7 @@ const Chatbot = ({ onClose }) => {
   return (
     <div className="chatbot">
       <div className="chatbot-header">
-        <h3>Chatbot</h3>
+        <h3>The DIAMMANTOR</h3>
         <button onClick={onClose} id='xbutton'>X</button>
       </div>
       <div className="chatbot-iframe-container">

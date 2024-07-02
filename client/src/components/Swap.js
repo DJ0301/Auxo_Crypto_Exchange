@@ -50,7 +50,6 @@ const Swap = ({setUserPublicKey}) => {
 
   ]; 
    const handleMenuClick = (e) => {
-    message.info('Click on menu item.');
     console.log('click', e);
     setAsset(e.key);
   };  
@@ -244,7 +243,6 @@ const menuProps = {
 
   return (
     <>
-    
         {loggedIn && (
           <div className="tradeBox">
             <div className="tradeBoxHeader">

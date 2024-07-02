@@ -304,8 +304,8 @@ header {
   position: fixed;
   bottom: 8px;
   right: 20px;
-  width: 60px; /* Adjust the size as needed */
-  height: 60px; /* Adjust the size as needed */
+  width: 120px; /* Adjust the size as needed */
+  height: 120px; /* Adjust the size as needed */
   cursor: pointer;
   z-index: 1001; /* Ensure it's above other elements */
 }
