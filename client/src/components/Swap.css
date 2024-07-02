@@ -1,5 +1,5 @@
 .tradeBox {
-    width: 500px;
+    width: 550px;
     background-color: #0E111B;
     border: 2px solid #21273a;
     min-height: 100px;
@@ -62,7 +62,7 @@
   .assetOne {
     text-align: center; /* Center align text */
     margin-bottom: 10px;
-    margin-top: 16px;
+    margin-top: 26px;
     margin-right: -15px;
     width: 300px;
     font-size: 15px;
@@ -88,7 +88,7 @@
   }
   
   .swapButton {
-    margin-top: 50px;
+    margin-top: 20px;
     padding: 10px 20px;
     background-color:#1f006d; /* Green */
     color: white;
@@ -256,5 +256,29 @@ input[type="number"]::-webkit-outer-spin-button {
 .confirmationPopup p{
   font-weight: bold;
 }
+.ant-dropdown-link{
+height:40px;
+ width: 100px;
+ display: inline;
+ color: white;
+ background-color: #110153;
+ border-width: 2px;
+ border-color: white;
+ top:3.5px;
+}
+.ant-dropdown-link img{
+  margin-right: 8px;
+  top: 2px;
+}
 
-
+ .ant-dropdown-link .text-cont {
+  flex-grow: 1;
+  text-align: right;
+  margin-bottom: 4px;
+  bottom: 3px;
+}
+.ant-dropdown-link .anticon-down {
+  font-size: 12px; /* Adjust the size of the dropdown icon if necessary */
+  font-weight: bold;
+  bottom: 4px;
+}

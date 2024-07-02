@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import './Swap.css'
-
+import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Dropdown, message, Menu, Space, Tooltip } from 'antd'; 
+import BitcoinIcon from '../icons/bitcoin-btc-logo.png';
+import EthereumIcon from '../icons/ethereum-eth-logo.png';
+import DogecoinIcon from '../icons/dogecoin-doge-logo.png';
 
 const Swap = ({setUserPublicKey}) => {
   const [userSecret, setUserSecret] = useState('');
@@ -20,6 +24,43 @@ const Swap = ({setUserPublicKey}) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // State to manage loading during transaction processing
   const [showLoginPopup, setShowLoginPopup] = useState(false); // State to manage login popup visibility
+
+
+
+  const handleButtonClick = (e) => {
+    message.info('Click on left button.');
+    console.log('click left button', e);
+  };
+  const items = [
+    {
+      label: 'BTC',
+      key: 'TestBTC',
+      icon: <img src={BitcoinIcon} alt="BTC" style={{ width: '20px', height: '20px' }} />,
+    },
+    {
+      label: 'ETH',
+      key: 'TestETH',
+      icon: <img src={EthereumIcon} alt="ETH" style={{ width: '20px', height: '20px' }} />,
+    },
+    {
+      label: 'DOGE',
+      key: 'TestDOGE',
+      icon: <img src={DogecoinIcon} alt="DOGE" style={{ width: '20px', height: '20px' }} />,
+    },
+
+  ]; 
+   const handleMenuClick = (e) => {
+    message.info('Click on menu item.');
+    console.log('click', e);
+    setAsset(e.key);
+  };  
+const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
+
+
+
 
   useEffect(() => {
     const storedUserSecret = localStorage.getItem('userSecret');
@@ -219,7 +260,7 @@ const Swap = ({setUserPublicKey}) => {
                   checked={isTradeForDiam}
                   onChange={() => setIsTradeForDiam(true)}
                 />
-                <span class="name">Trade for DIAM</span>
+                <span className="name">Trade for DIAM</span>
               </label >
               <label className="radio">
                 <input
@@ -228,7 +269,7 @@ const Swap = ({setUserPublicKey}) => {
                   checked={!isTradeForDiam}
                   onChange={() => setIsTradeForDiam(false)}
                 />
-               <span class="name">Trade for Assets</span> 
+               <span className="name">Trade for Assets</span> 
               </label>
               </div>
               
@@ -240,7 +281,22 @@ const Swap = ({setUserPublicKey}) => {
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Amount"
                 />
-                <select
+                  <Dropdown overlay={
+        <Menu onClick={(e) => handleMenuClick(e)}>
+          {items.map(item => (
+            <Menu.Item key={item.key} icon={item.icon}>
+              {item.label}
+            </Menu.Item>
+          ))}
+        </Menu>
+      }>
+        <button className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+          {items.find((item) => item.key === asset)?.icon} {/* Display selected option icon */}
+          <span className="text-cont">{items.find((item) => item.key === asset)?.label}</span> {/* Display selected option label */}
+          <DownOutlined />
+        </button>
+      </Dropdown>
+                {/* <select
                   value={asset}
                   onChange={(e) => setAsset(e.target.value)}
                   className='Dropdown'
@@ -248,7 +304,7 @@ const Swap = ({setUserPublicKey}) => {
                   <option value="TestBTC">BTC</option>
                   <option value="TestETH">ETH</option>
                   <option value="TestDOGE">DOGE</option>
-                </select>
+                </select> */}
                 <div className="assetOne">
                   <p className='assetOneText'> Current Price: {formatCurrentPrice()}</p>
                 </div>

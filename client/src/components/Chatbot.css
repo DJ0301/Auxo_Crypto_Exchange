@@ -1,10 +1,12 @@
 /* Chatbot.css */
 .chatbot {
     position: fixed;
-    bottom: 75px;
+    bottom: 60px;
     right: 20px;
     width: 300px;
     max-width: 100%;
+    /* max-height: 475px; */
+    
     background-color: #00102f;
     border: 1px solid #4f529d;
     border-radius: 8px;

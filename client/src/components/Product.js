@@ -85,10 +85,6 @@ function Product() {
          <button onClick={paymentHandler} className="button4">UPI Payments</button>
       </div>
 
-    <div className="container">
-      <button onClick={paymentHandler} className="buttonupi">UPI Payments</button>
-    </div>
-
     </div>
   );
 }

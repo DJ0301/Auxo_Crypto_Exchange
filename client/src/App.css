@@ -302,7 +302,7 @@ header {
 
 .chatbot-icon {
   position: fixed;
-  bottom: 20px;
+  bottom: 8px;
   right: 20px;
   width: 60px; /* Adjust the size as needed */
   height: 60px; /* Adjust the size as needed */
