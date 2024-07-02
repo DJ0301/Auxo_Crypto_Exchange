@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Poller+One&display=swap');
+
+.star-wars-text {
+    position: relative;
+    height: 100vh; /* Adjust height as needed */
+    color: yellow;
+    font-family: 'Poller One', sans-serif; /* Use appropriate Star Wars font */
+    overflow: hidden;
+    z-index: -1;
+  }
+  
+  .crawl-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 800px; /* Adjust width as needed */
+    font-size: 1.5rem; /* Adjust font size */
+    line-height: 1.5;
+    white-space: pre-line;
+    animation: crawl 20s linear infinite; /* Adjust animation duration as needed */
+  }
+  
+  @keyframes crawl {
+    0% {
+      transform: translate(-50%, -50%) translateY(100%);
+    }
+    100% {
+      transform: translate(-50%, -50%) translateY(-100%);
+    }
+  }
+  

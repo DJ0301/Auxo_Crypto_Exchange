@@ -10,7 +10,7 @@ import BackgroundVideo from "./components/BackgroundVideo";
 import Chatbot from "./components/Chatbot";
 import ToOther from "./components/ToOther";
 import AssetTrading from "./components/AssetTrading";
-
+import StarWars from "./components/StarWars";
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -59,6 +59,9 @@ function App() {
       {/* Print statement indicating login status */}
       {loggedIn && (
         <p className="publickey">Your Public Key: {userPublicKey}</p>
+      )}
+      {!userPublicKey && (
+      <StarWars />
       )}
     </div>
   );

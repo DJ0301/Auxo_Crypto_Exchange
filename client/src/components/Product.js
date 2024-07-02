@@ -75,12 +75,7 @@ function Product() {
 
   return (
     <div className="product">
-      {/* <h2>Tshirt</h2>
-      <p>Solid blue cotton Tshirt</p>
-      <img src={TshirtImg} />
-      <br /> */}
       <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-
       <div className='container'>
          <button onClick={paymentHandler} className="button4">UPI Payments</button>
       </div>
