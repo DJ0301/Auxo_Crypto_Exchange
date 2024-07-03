@@ -125,25 +125,8 @@ function Header(props) {
           <img src="/down-arrow.svg" alt="arrow" id="downarrow" />
           {isDropdownOpen && <Dropdown onSelect={handleSelect} />} {/* Pass the handler to Dropdown */}
         </div>
-        {loggedIn ? (
-          <div className="headerItem" onClick={handleLogout}>
-            <div className="eth">Logout</div>
-          </div>
-        ) : (
-          <div className="headerItem" onClick={() => setShowLoginPopup(true)}>
-            <div className="eth">Login</div>
-          </div>
-        )}
       </div>
-      {/* <Modal
-        show={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        setUserSecret={setUserSecret}
-        setUserPublicKey={setUserPublicKey}
-        setLoggedIn={setLoggedIn}
-        keepLoggedIn={keepLoggedIn}
-        setKeepLoggedIn={setKeepLoggedIn}
-      /> */}
+      
     </header>
   );
 }

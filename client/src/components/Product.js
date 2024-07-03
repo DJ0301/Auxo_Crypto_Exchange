@@ -76,7 +76,7 @@ function Product() {
   return (
     <div className="product">
     <br/><br/><br/>
-<button onClick={paymentHandler} id='btn'>UPI Payments</button>
+<button className="button"onClick={paymentHandler} id='btn'>UPI Payments</button>
 <br/><br/><br/>
     </div>
   );
