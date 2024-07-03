@@ -418,6 +418,48 @@ const login = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+const generateAccount = async () => {
+    try {
+        const keypair = DiamSdk.Keypair.random();
+        const fundAccount = async (publicKey) => {
+            const fetch = await import('node-fetch').then(mod => mod.default);
+            const response = await fetch(`https://friendbot.diamcircle.io/?addr=${publicKey}`);
+            if (!response.ok) {
+                throw new Error(`Failed to activate account ${publicKey}: ${response.statusText}`);
+            }
+            return response.json();
+        };
+
+        await Promise.all([
+            fundAccount(keypair.publicKey()),
+        ]);
+        console.log('Generated account:', keypair.publicKey());
+        return {
+            publicKey: keypair.publicKey(),
+            secretKey: keypair.secret(),
+        };
+        
+    } catch (error) {
+        console.error('Error generating account:', error);
+        throw error;
+    }
+};
+
+// Register endpoint to create a new account and return public key and secret
+const register = async (req, res) => {
+    try {
+        const { publicKey, secretKey } = await generateAccount();
+        res.json({
+            publicKey: publicKey,
+            secretKey: secretKey,
+        });
+    } catch (error) {
+        console.error('Error in register:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 app.post('/login', (req, res) => {
     login(req, res);
 });
@@ -438,6 +480,9 @@ app.post('/fetch-token-price', (req,res) => {
 });
 app.post('/trade-assets', (req, res) => {
     tradeAssets(req, res);
+});
+app.post('/register', (req, res) => {
+    register(req, res);
 });
 app.listen(port, () => {
     console.log(`Diamante backend listening at http://localhost:${port}`);
