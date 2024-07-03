@@ -21,7 +21,7 @@ function Product() {
     console.log(order);
 
     var options = {
-      key: "rzp_test_aqq5IHusp1A3ya", // Enter the Key ID generated from the Dashboard
+      key: "rzp_test_goQdXjPF8Zv1kQ", // Enter the Key ID generated from the Dashboard
       amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
       currency,
       name: "AUXO", //your business name
@@ -56,7 +56,7 @@ function Product() {
         address: "Razorpay Corporate Office",
       },
       theme: {
-        color: "#243056",
+        color: "#000000",
       },
     };
     var rzp1 = new window.Razorpay(options);
@@ -75,8 +75,9 @@ function Product() {
 
   return (
     <div className="product">
-Launching Soon !
-
+    <br/><br/><br/>
+<button onClick={paymentHandler} id='btn'>UPI Payments</button>
+<br/><br/><br/>
     </div>
   );
 }
