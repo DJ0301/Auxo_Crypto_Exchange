@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../logoTouse.png';
 import Eth from '../eth.svg';
 import Dropdown from './Dropdown'; // Import the Dropdown component
-import Modal from './Modal';
+// import Modal from './Modal';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Dia from '../dia.webp';
@@ -130,12 +130,12 @@ function Header(props) {
             <div className="eth">Logout</div>
           </div>
         ) : (
-          <div className="headerItem" onClick={() => setIsModalOpen(true)}>
+          <div className="headerItem" onClick={() => setShowLoginPopup(true)}>
             <div className="eth">Login</div>
           </div>
         )}
       </div>
-      <Modal
+      {/* <Modal
         show={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         setUserSecret={setUserSecret}
@@ -143,7 +143,7 @@ function Header(props) {
         setLoggedIn={setLoggedIn}
         keepLoggedIn={keepLoggedIn}
         setKeepLoggedIn={setKeepLoggedIn}
-      />
+      /> */}
     </header>
   );
 }

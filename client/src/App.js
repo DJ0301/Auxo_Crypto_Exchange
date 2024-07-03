@@ -37,13 +37,18 @@ function App() {
     setIsLoginOpen(false);
   };
 
+
+
   return (
     <div className="App">
       <BackgroundVideo />
       <Header connect={connect} isConnected={isConnected} address={address} openModal={openLogin} />
       <div className="mainWindow">
         <Routes>
-          <Route path="/" element={<Swap setUserPublicKey={setUserPublicKey} />} />
+          <Route path="/" element={<Swap setUserPublicKey={setUserPublicKey}  isLoginOpen={isLoginOpen} 
+                closeLogin={closeLogin} 
+                loggedIn={loggedIn} 
+                setLoggedIn={setLoggedIn}  />} />
           <Route path="/tokens" element={<Tokens />} />
           <Route path="/to-other" element={<ToOther />} />
           <Route path="/asset-trading" element={<AssetTrading userPublicKey={userPublicKey} />} />

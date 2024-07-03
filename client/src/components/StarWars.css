@@ -3,7 +3,7 @@
 .star-wars-text {
     position: relative;
     height: 100vh; /* Adjust height as needed */
-    color: yellow;
+    color: rgb(0, 94, 255);
     font-family: 'Poller One', sans-serif; /* Use appropriate Star Wars font */
     overflow: hidden;
     z-index: -1;

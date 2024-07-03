@@ -8,7 +8,7 @@ import BitcoinIcon from '../icons/bitcoin-btc-logo.png';
 import EthereumIcon from '../icons/ethereum-eth-logo.png';
 import DogecoinIcon from '../icons/dogecoin-doge-logo.png';
 
-const Swap = ({setUserPublicKey}) => {
+const Swap = ({ setUserPublicKey }) => {
   const [userSecret, setUserSecret] = useState('');
   const [amount, setAmount] = useState('');
   const [asset, setAsset] = useState('TestBTC');
@@ -26,11 +26,6 @@ const Swap = ({setUserPublicKey}) => {
   const [showLoginPopup, setShowLoginPopup] = useState(false); // State to manage login popup visibility
 
 
-
-  const handleButtonClick = (e) => {
-    message.info('Click on left button.');
-    console.log('click left button', e);
-  };
   const items = [
     {
       label: 'BTC',
@@ -204,6 +199,7 @@ const menuProps = {
     sessionStorage.removeItem('userSecret');
     sessionStorage.removeItem('keepLoggedIn');
     toast.info('Logged out');
+    
   };
 
   const handleSwap = () => {
@@ -239,15 +235,61 @@ const menuProps = {
       return `${amount} DIAM for ${(amount * tokenPrice).toFixed(2)} ${asset}`;
     }
   };
-
+  const handleConnectWallet = () => {
+    // Perform wallet connection logic here
+    // For demo purposes, setting loggedIn to true
+    setShowLoginPopup(false); // Hide the login popup after successful connection
+  };
 
   return (
     <>
+  {!showLoginPopup && (
+        <div className="header1" style={{ textAlign: 'center', marginTop: '20px' }}>
+          {/* <div className="title">Login</div> */}
+          <div className="login-button">
+            {!loggedIn ? (
+              <button onClick={() => setShowLoginPopup(true)}>Connect Wallet</button>
+            ) : (
+              null
+            )}
+          </div>
+        </div>
+      )}  
+
+      {showLoginPopup && (
+        <div className="login-popup">
+          <div className="login-header">Connect Wallet</div>
+          <input
+            type="text"
+            className="texting"Z
+            placeholder="Enter your secret"
+            value={userSecret}
+            onChange={(e) => setUserSecret(e.target.value)}
+          />
+          <div className="remember-me">
+            <input
+              type="checkbox"
+              id="keepLoggedIn"
+              checked={keepLoggedIn}
+              onChange={(e) => setKeepLoggedIn(e.target.checked)}
+            />
+            <label htmlFor="keepLoggedIn">Keep me logged in</label>
+          </div>
+          <div className="login-buttons">
+            <button className="loginANDcancel" onClick={handleLogin}><span className="loginANDcancellogintext">Login</span></button>
+            <button className="loginANDcancel" onClick={() => setShowLoginPopup(false)}><span className="loginANDcancelcanceltext">Cancel</span> </button>
+          </div>
+        </div>
+      )}
+
         {loggedIn && (
           <div className="tradeBox">
             <div className="tradeBoxHeader">
             <div className="onlineCircle"></div>
               <p>{userPublicKey.slice(0, 15)}....</p>
+              <button className="disconnetBTN"  onClick={handleLogout} style={{ marginTop: '10px' }}>
+             <span className='disText'>Disconnect</span> 
+            </button>
             </div>
             <div>
               <div className='radio-inputs'>

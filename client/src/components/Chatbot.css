@@ -2,7 +2,7 @@
 .chatbot {
     position: fixed;
     bottom: 60px;
-    right: 20px;
+    right: -10px;
     width: 300px;
     max-width: 100%;
     /* max-height: 475px; */
@@ -22,6 +22,7 @@
     border-bottom: 1px solid #909090;
     background-color: #000a1d;
     border-radius: 8px 8px 0 0;
+    font-size: 15px;
   }
   
   .chatbot-messages {

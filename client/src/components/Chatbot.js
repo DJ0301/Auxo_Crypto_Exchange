@@ -12,7 +12,7 @@ const Chatbot = ({ onClose }) => {
         <iframe
           src="https://www.chatbase.co/chatbot-iframe/vVZlDGTPtpN_tqq3rBcCZ"
           width="100%"
-          style={{ height: '100%', minHeight: '400px' }}
+          style={{ height: '100%', minHeight: '370px' }}
           frameBorder="0"
           title="Chatbot"
         ></iframe>

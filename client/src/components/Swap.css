@@ -95,6 +95,7 @@
 .insufficientFundsMessage {
   text-align: center;
   color: var(--error-color);
+ top: 15px;
 }
 
 .swapButton {
@@ -256,29 +257,31 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .ant-dropdown-link {
   height: 40px;
-  width: 100px;
+  width: 110px;
+  border-radius: none;
   display: inline;
   color: var(--text-color);
   background-color: #110153;
   border-width: 2px;
   border-color: var(--text-color);
-  top: 3.5px;
+  top: 6.8px;
 }
 
 .ant-dropdown-link img {
-  margin-right: 8px;
-  top: 2px;
+  margin-right: -8px;
+  top: -2px;
+  right: 40px;
 }
 
 .ant-dropdown-link .text-cont {
   flex-grow: 1;
   text-align: right;
-  margin-bottom: 4px;
-  bottom: 3px;
+right: 5px;
+  bottom: 25px;
 }
 
 .ant-dropdown-link .anticon-down {
-  font-size: 12px;
+  font-size: 0.01px;
   font-weight: bold;
   bottom: 4px;
 }
@@ -297,3 +300,40 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 90%;
   }
 }
+
+/* TESTING STARTS */
+.disconnetBTN{
+  width: 140px;
+  height: 30px;
+  border-radius: none;
+  text-align: center;
+  left: 20px;
+  margin-bottom: 10px;
+}
+.disText{
+  bottom: 6px;
+  right: 35px;
+}
+.login-header{
+  font-size: 25px;
+  font-weight: bold;
+}
+.login-popup{
+  bottom: 50px;
+}
+.remember-me{
+  bottom: 5px;
+  right: 63px;
+}
+.loginANDcancel{
+  width: 120px;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+.loginANDcancellogintext{
+right:16px;
+}
+.loginANDcancelcanceltext{
+  right:22px;
+  }
+/* END OF TESTING */
