@@ -244,14 +244,18 @@ const menuProps = {
   return (
     <>
   {!showLoginPopup && (
+    
         <div className="header1" style={{ textAlign: 'center', marginTop: '20px' }}>
           {/* <div className="title">Login</div> */}
+          
           <div className="login-button">
+            <br/><br/><br/>
             {!loggedIn ? (
               <button onClick={() => setShowLoginPopup(true)}>Connect Wallet</button>
             ) : (
               null
             )}
+            <br/><br/><br/>
           </div>
         </div>
       )}  
