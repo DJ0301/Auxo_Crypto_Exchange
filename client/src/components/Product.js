@@ -75,10 +75,7 @@ function Product() {
 
   return (
     <div className="product">
-      <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-      <div className='container'>
-         <button onClick={paymentHandler} className="button4">UPI Payments</button>
-      </div>
+Launching Soon !
 
     </div>
   );

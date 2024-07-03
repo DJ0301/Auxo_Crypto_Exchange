@@ -6,12 +6,13 @@ import Dropdown from './Dropdown'; // Import the Dropdown component
 import Modal from './Modal';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Dia from '../dia.webp';
 
 function Header(props) {
   const { address, isConnected, openModal } = props;
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('Ethereum');
-  const [selectedIcon, setSelectedIcon] = useState(Eth);
+  const [selectedOption, setSelectedOption] = useState('Diamante');
+  const [selectedIcon, setSelectedIcon] = useState(Dia);
   const [isModalOpen, setIsModalOpen] = useState(false);
   // TEsting begins
   const [userSecret, setUserSecret] = useState('');
