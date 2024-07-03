@@ -115,7 +115,7 @@ const menuProps = {
 
   const fetchUserPublicKey = async (secret) => {
     try {
-      const response = await axios.post('http://localhost:3009/login', {
+      const response = await axios.post('https://auxo-crypto-exchange.onrender.com/login', {
         UserSecret: secret,
       });
 
@@ -130,7 +130,7 @@ const menuProps = {
 
   const fetchTokenPrice = async (asset) => {
     try {
-      const response = await axios.post('http://localhost:3009/fetch-token-price', {
+      const response = await axios.post('https://auxo-crypto-exchange.onrender.com/fetch-token-price', {
         asset: asset,
       });
 
@@ -143,7 +143,7 @@ const menuProps = {
 
   const fetchAccountBalances = async (publicKey) => {
     try {
-      const response = await axios.post(`http://localhost:3009/get-balances`, {
+      const response = await axios.post(`https://auxo-crypto-exchange.onrender.com/get-balances`, {
         publicKey: publicKey,
       });
       
@@ -165,7 +165,7 @@ const menuProps = {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3009/login', {
+      const response = await axios.post('https://auxo-crypto-exchange.onrender.com/login', {
         UserSecret: userSecret,
       });
 
@@ -211,7 +211,7 @@ const menuProps = {
 
     try {
       const endpoint = isTradeForDiam ? 'trade-for-DIAM' : 'trade-for-assets';
-      const response = await axios.post(`http://localhost:3009/${endpoint}`, {
+      const response = await axios.post(`https://auxo-crypto-exchange.onrender.com/${endpoint}`, {
         UserSecret: userSecret,
         amount: amount,
         asset: asset,
