@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import './Swap.css'
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Dropdown, message, Menu, Space, Tooltip } from 'antd'; 
+import { DownOutlined, CopyOutlined, LoadingOutlined } from '@ant-design/icons';
+import {  Dropdown, Menu, Spin } from 'antd'; 
 import BitcoinIcon from '../icons/bitcoin-btc-logo.png';
 import EthereumIcon from '../icons/ethereum-eth-logo.png';
 import DogecoinIcon from '../icons/dogecoin-doge-logo.png';
@@ -24,7 +24,11 @@ const Swap = ({ setUserPublicKey }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // State to manage loading during transaction processing
   const [showLoginPopup, setShowLoginPopup] = useState(false); // State to manage login popup visibility
-
+  const [showWalletOptions, setShowWalletOptions] = useState(false);
+  const [showRegisterPopup, setShowRegisterPopup] = useState(false);
+  const [newUserSecret, setNewUserSecret] = useState('');
+  const [newUserPublicKey, setNewUserPublicKey] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const items = [
     {
@@ -235,23 +239,37 @@ const menuProps = {
       return `${amount} DIAM for ${(amount * tokenPrice).toFixed(2)} ${asset}`;
     }
   };
+
   const handleConnectWallet = () => {
-    // Perform wallet connection logic here
-    // For demo purposes, setting loggedIn to true
-    setShowLoginPopup(false); // Hide the login popup after successful connection
+    setShowWalletOptions(true);
   };
 
+  const handleRegister = async () => {
+    setIsRegistering(true);
+    try {
+      const response = await axios.post('https://auxo-crypto-exchange.onrender.com/register');
+      setNewUserSecret(response.data.secretKey);
+      setNewUserPublicKey(response.data.publicKey);
+      setShowRegisterPopup(true);
+    } catch (error) {
+      console.error('Error registering:', error);
+      toast.error('Registration failed');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard');
+  };
   return (
     <>
-  {!showLoginPopup && (
-    
+      {!showLoginPopup && !showWalletOptions && !showRegisterPopup && (
         <div className="header1" style={{ textAlign: 'center', marginTop: '20px' }}>
-          {/* <div className="title">Login</div> */}
-          
           <div className="login-button">
             <br/><br/><br/>
             {!loggedIn ? (
-              <button onClick={() => setShowLoginPopup(true)}>Connect Wallet</button>
+              <button onClick={handleConnectWallet}>Connect Wallet</button>
             ) : (
               null
             )}
@@ -259,6 +277,46 @@ const menuProps = {
           </div>
         </div>
       )}  
+
+{showWalletOptions && (
+        <div className="wallet-options-popup">
+          <div className="wallet-options-header">Connect Wallet</div>
+          <div className="wallet-options-buttons">
+            <button onClick={() => {setShowLoginPopup(true); setShowWalletOptions(false);}}>Login</button>
+            <button onClick={handleRegister} disabled={isRegistering}>
+              {isRegistering ? <Spin indicator={<LoadingOutlined style={{ fontSize: 16 }} spin />} /> : 'Register'}
+            </button>
+          </div>
+          <button className="cancel-button" onClick={() => setShowWalletOptions(false)}>Cancel</button>
+        </div>
+      )}
+
+      {isRegistering && (
+        <div className="loading-screen">
+          <Spin size="large" />
+          <p>Creating your keypair...</p>
+        </div>
+      )}
+
+      {showRegisterPopup && (
+        <div className="register-popup">
+          <div className="register-header">New Account Created</div>
+          <div className="register-info">
+            <div className="info-row">
+              <span>Secret Key:</span>
+              <input type="text" value={newUserSecret} readOnly />
+              <CopyOutlined onClick={() => copyToClipboard(newUserSecret)} />
+            </div>
+            <div className="info-row">
+              <span>Public Key:</span>
+              <input type="text" value={newUserPublicKey} readOnly />
+              <CopyOutlined onClick={() => copyToClipboard(newUserPublicKey)} />
+            </div>
+          </div>
+          <p className="warning-text">Please save your Secret Key securely. It will not be shown again.</p>
+          <button onClick={() => setShowRegisterPopup(false)}>Close</button>
+        </div>
+      )}
 
       {showLoginPopup && (
         <div className="login-popup">

@@ -344,4 +344,24 @@ right:16px;
   .ViewTestNet{
     bottom: 10px;
   }
+
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .loading-screen p {
+    color: white;
+    margin-top: 20px;
+    font-size: 18px;
+  }
 /* END OF TESTING */
