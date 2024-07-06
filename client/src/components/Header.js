@@ -106,16 +106,14 @@ function Header(props) {
     <header>
       <div className="leftH">
         <img src={Logo} alt="logo" className="logo" />
-        <Link to="/" className="link">
           <div className="Auxo"><h1>Auxo</h1></div>
-        </Link>
         
         <Link to="/" className="link">
           <div className="headerItem">Swap</div>
         </Link>
         <Link to="/tokens" className="link">
           {/* <div className="link headerItem" onClick={paymentHandler}>UPI Payments</div> */}
-          <div className="headerItem" >UPI Payments</div>
+          <div className="headerItem" >Buy with UPI</div>
         </Link>
       </div>
       <div className="rightH">

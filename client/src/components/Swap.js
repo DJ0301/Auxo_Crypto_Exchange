@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+
 import './Swap.css'
 import { DownOutlined, CopyOutlined, LoadingOutlined } from '@ant-design/icons';
 import {  Dropdown, Menu, Spin } from 'antd'; 
@@ -57,7 +58,16 @@ const menuProps = {
     onClick: handleMenuClick,
   };
 
-
+  const showToast = (message, type = 'info') => {
+    toast[type](message, {
+      position: "bottom-left",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
 
 
   useEffect(() => {
@@ -128,7 +138,6 @@ const menuProps = {
       toast.success('Login successful');
     } catch (error) {
       console.error('Error fetching public key:', error);
-      toast.error('Failed to fetch public key');
     }
   };
 
@@ -155,7 +164,7 @@ const menuProps = {
         if (balance.assetCode) {
           acc[balance.assetCode] = balance.balance;
         } else {
-          acc['DIAM'] = balance.balance; // Assuming 'native' balance represents DIAM
+          acc['DIAM'] = balance.balance;
         }
         return acc;
       }, {});
@@ -163,9 +172,9 @@ const menuProps = {
       setAccountBalances(balances);
     } catch (error) {
       console.error('Error fetching account balances:', error);
-      toast.error('Failed to fetch account balances');
     }
   };
+
 
   const handleLogin = async () => {
     try {
@@ -173,8 +182,8 @@ const menuProps = {
         UserSecret: userSecret,
       });
 
-      setUserPublicKeyLocal(response.data.publicKey); // Update local state
-      setUserPublicKey(response.data.publicKey); // Pass to parent component
+      setUserPublicKeyLocal(response.data.publicKey);
+      setUserPublicKey(response.data.publicKey);
       setLoggedIn(true);
 
       if (keepLoggedIn) {
@@ -185,11 +194,11 @@ const menuProps = {
         sessionStorage.setItem('keepLoggedIn', 'true');
       }
 
-      setShowLoginPopup(false); // Hide the login popup after successful login
-      toast.success('Login successful');
+      setShowLoginPopup(false);
+      showToast('Login successful!', 'success');
     } catch (error) {
       console.error('Error logging in:', error);
-      toast.error('Login failed');
+      showToast(`Login failed: ${error.response?.data?.message || error.message}`, 'error');
     }
   };
 
@@ -211,7 +220,7 @@ const menuProps = {
   };
 
   const confirmSwap = async () => {
-    setIsProcessing(true); // Set processing state to true while transaction is being processed
+    setIsProcessing(true);
 
     try {
       const endpoint = isTradeForDiam ? 'trade-for-DIAM' : 'trade-for-assets';
@@ -222,15 +231,19 @@ const menuProps = {
       });
 
       setTransactionID(response.data.transactionID || response.data.transactionHashes.assetSend);
-      toast.success('Trade successful');
+      showToast('Trade successful!', 'success');
+      
+      await fetchAccountBalances(userPublicKey);
+      setAmount('');
     } catch (error) {
       console.error('Error trading:', error);
-      toast.error('Trade failed');
+      showToast(`Trade failed: ${error.response?.data?.message || error.message}`, 'error');
     } finally {
-      setIsProcessing(false); // Set processing state back to false after transaction attempt
-      setShowConfirmation(false); // Hide confirmation dialog after transaction attempt
+      setIsProcessing(false);
+      setShowConfirmation(false);
     }
   };
+
 
   const formatCurrentPrice = () => {
     if (isTradeForDiam) {
@@ -251,13 +264,15 @@ const menuProps = {
       setNewUserSecret(response.data.secretKey);
       setNewUserPublicKey(response.data.publicKey);
       setShowRegisterPopup(true);
+      showToast('Registration successful!', 'success');
     } catch (error) {
       console.error('Error registering:', error);
-      toast.error('Registration failed');
+      showToast(`Registration failed: ${error.response?.data?.message || error.message}`, 'error');
     } finally {
       setIsRegistering(false);
     }
   };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard');
