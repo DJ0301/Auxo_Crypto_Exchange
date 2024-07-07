@@ -328,12 +328,13 @@ right: 5px;
 .login-header{
   font-size: 25px;
   font-weight: bold;
+  margin-bottom: 40px;
 }
 .login-popup{
   bottom: 50px;
 }
 .remember-me{
-  bottom: 5px;
+  bottom: 15px;
   right: 63px;
 }
 .loginANDcancel{
