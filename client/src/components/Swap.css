@@ -68,6 +68,8 @@
 
 .texting {
   width: 250px;
+  bottom: 20px;
+  position: relative;
 }
 
 .selecting {
@@ -87,14 +89,17 @@
   margin-right: -15px;
 }
 .assetOneText{
-right: 75px;
+right: 0;
+left: 15px;
+position: relative;
 }
 .assetTwo {
   margin-top: 30px;
   margin-right: -45px;
 }
 .assetTwoText{
-  right: 105px;
+  right: 0;
+  position: relative;
 }
 .insufficientFundsMessage {
   text-align: center;
@@ -260,6 +265,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .ant-dropdown-link {
+  position: relative;
   height: 40px;
   width: 110px;
   border-radius: none;
@@ -268,7 +274,7 @@ input[type="number"]::-webkit-outer-spin-button {
   background-color: #110153;
   border-width: 2px;
   border-color: var(--text-color);
-  top: 6.8px;
+  top: -13px;
   margin-left: 10px;
 }
 

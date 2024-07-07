@@ -19,8 +19,8 @@ button {
   color: #ffffff;
   background: #2293D2;
   border: 1px solid #2293D2;
-  text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff;
-  box-shadow: 0 0 5px #2293D2, 0 0 20px #2293D2, 0 0 50px #2293D2,
+  text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 10px #ffffff;
+  box-shadow: 0 0 2px #2293D2, 0 0 10px #2293D2, 0 0 20px #2293D2,
     0 0 100px #2293D2;
 }
 /* 036C7B */
