@@ -13,8 +13,18 @@
   --border-radius: 5px;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
 .tradeBox {
-  width: 550px;
+  width: 90%;
+  max-width: 550px;
   background-color: var(--bg-color);
   border: 2px solid var(--border-color);
   min-height: 100px;
@@ -63,21 +73,17 @@
   border-radius: 3px;
   padding: var(--padding);
   margin-bottom: 10px;
+  width: 100%;
+  max-width: 250px;
 }
 
-.texting {
-  width: 250px;
-  position: relative;
-}
-
-.selecting {
-  width: 200px;
-}
 .scrollable-content {
-  max-height: 600px; /* Set the max height as needed */
+  max-height: 600px;
   overflow-y: auto;
-   /* Make sure it takes the full width */
-  padding: 10px; /* Add padding if needed */
+  width: 100%;
+  padding: 10px;
+   scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none;  /* For Internet Explorer and Edge */
 }
 
 .insufficientFundsMessage {
@@ -104,7 +110,8 @@
   text-align: center;
   margin-top: 20px;
   background: #000;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   border-radius: 20px;
   margin-bottom: 100px;
 }
@@ -116,7 +123,8 @@
   background-color: #000647;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
   padding: 0.25rem;
-  width: 390px;
+  width: 100%;
+  max-width: 390px;
   font-size: 14px;
   margin-bottom: 20px;
 }
@@ -253,7 +261,6 @@ input[type="number"]::-webkit-outer-spin-button {
   background-color: #110153;
   border-width: 2px;
   border-color: var(--text-color);
-  /* top: -13px; */
   margin-left: 10px;
 }
 
@@ -266,7 +273,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .ant-dropdown-link .text-cont {
   flex-grow: 1;
   text-align: right;
-right: 5px;
+  right: 5px;
   bottom: 25px;
 }
 
@@ -276,7 +283,6 @@ right: 5px;
   bottom: 4px;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .tradeBox {
     width: 90%;
@@ -291,65 +297,70 @@ right: 5px;
   }
 }
 
-/* TESTING STARTS */
-.disconnetBTN{
+.disconnetBTN {
   width: 140px;
   height: 30px;
   border-radius: none;
   text-align: center;
-  left: 20px;
   margin-bottom: 10px;
 }
-.disText{
+
+.disText {
   bottom: 6px;
   right: 35px;
 }
-.login-header{
+
+.login-header {
   font-size: 25px;
   font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 65px;
 }
-.login-popup{
+
+.login-popup {
   bottom: 50px;
 }
-.remember-me{
-  bottom: 5px;
-  right: 50px;
+
+.remember-me {
+  bottom: 15px;
+  right: 63px;
 }
-.loginANDcancel{
+
+.loginANDcancel {
   width: 120px;
   margin-left: 10px;
   margin-top: 5px;
 }
-.loginANDcancellogintext{
-right:16px;
-}
-.loginANDcancelcanceltext{
-  right:22px;
-  }
-  .ViewTestNet{
-    bottom: 10px;
-    margin-bottom: 200px;
-    padding-bottom: 200px;
-  }
 
-  .loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .loading-screen p {
-    color: white;
-    margin-top: 20px;
-    font-size: 18px;
-  }
-/* END OF TESTING */
+.loginANDcancellogintext {
+  right: 16px;
+}
+
+.loginANDcancelcanceltext {
+  right: 22px;
+}
+
+.ViewTestNet {
+  bottom: 10px;
+  margin-bottom: 200px;
+  padding-bottom: 200px;
+}
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-screen p {
+  color: white;
+  margin-top: 20px;
+  font-size: 18px;
+}

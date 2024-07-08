@@ -440,10 +440,10 @@ const menuProps = {
                   <p className="insufficientFundsMessage">Insufficient Funds</p>
                 )}
                 <div className="assetTwo">
-                  <p className='assetTwoText'>
+                  {/* <p className='assetTwoText'>
                     You will receive: {receiveAmount.toFixed(2)}{' '}
                     {isTradeForDiam ? 'DIAM' : asset}
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
