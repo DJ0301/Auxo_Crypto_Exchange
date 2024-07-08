@@ -307,14 +307,14 @@ right: 5px;
 .login-header{
   font-size: 25px;
   font-weight: bold;
-  margin-bottom: 65px;
+  margin-bottom: 30px;
 }
 .login-popup{
   bottom: 50px;
 }
 .remember-me{
-  bottom: 15px;
-  right: 63px;
+  bottom: 5px;
+  right: 50px;
 }
 .loginANDcancel{
   width: 120px;
