@@ -108,6 +108,11 @@ header {
   background-color: transparent;
   border: none;
   color: white;
+  width: 250px;
+  position: relative;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 /* .tradeBox {

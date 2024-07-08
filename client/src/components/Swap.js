@@ -360,7 +360,7 @@ const menuProps = {
       )}
 
         {loggedIn && (
-          <div className="tradeBox">
+          <div className="tradeBox scrollable-content">
             <div className="tradeBoxHeader">
             <div className="onlineCircle"></div>
               <p>{userPublicKey.slice(0, 15)}....</p>
@@ -368,7 +368,7 @@ const menuProps = {
              <span className='disText'>Disconnect</span> 
             </button>
             </div>
-            <div>
+            <div >
               <div className='radio-inputs'>
                 <label className="radio">
                 <input
