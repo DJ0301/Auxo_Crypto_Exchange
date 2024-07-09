@@ -363,7 +363,7 @@ const menuProps = {
           <div className="tradeBox scrollable-content">
             <div className="tradeBoxHeader">
             <div className="onlineCircle"></div>
-              <p>{userPublicKey.slice(0, 15)}....</p>
+              <p>{userPublicKey.slice(0,10)}....</p>
               <button className="disconnetBTN"  onClick={handleLogout} style={{ marginTop: '10px' }}>
              <span className='disText'>Disconnect</span> 
             </button>

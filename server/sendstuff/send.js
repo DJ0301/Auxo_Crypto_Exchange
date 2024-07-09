@@ -460,6 +460,59 @@ const register = async (req, res) => {
     }
 };
 
+const fiatToDIAM = async (req, res) => {
+    try {
+        const { amount, payment_id, publicKey } = req.body;
+
+        // Validate input
+        if (!amount || !payment_id || !publicKey) {
+            return res.status(400).json({ error: 'Missing required parameters' });
+        }
+
+        // Convert amount to string and ensure it has 7 decimal places
+        const formattedAmount = parseFloat(amount/20).toFixed(7);
+
+        // Create a transaction to send DIAM
+        const fiatSecret = 'SDAEE64IXF4WPY3ZF3LRWD7QRHZ5TOZLVY4ISAE6LTEULNKBUEGHPF3B'; // Replace with the secret key of the account holding the DIAM for fiat transactions
+        const sourceKeypair = DiamSdk.Keypair.fromSecret(fiatSecret);
+        const sourceAccount = await server.loadAccount(sourceKeypair.publicKey());
+
+        const transaction = new DiamSdk.TransactionBuilder(sourceAccount, {
+            fee: await server.fetchBaseFee(),
+            networkPassphrase: DiamSdk.Networks.TESTNET,
+        })
+            .addOperation(
+                DiamSdk.Operation.payment({
+                    destination: publicKey,
+                    asset: DiamSdk.Asset.native(), // DIAM
+                    amount: formattedAmount,
+                })
+            )
+            .addMemo(DiamSdk.Memo.text(payment_id))
+            .setTimeout(100)
+            .build();
+
+        transaction.sign(sourceKeypair);
+        const result = await server.submitTransaction(transaction);
+
+        res.json({
+            message: 'DIAM sent successfully',
+            amount: formattedAmount,
+            payment_id: payment_id,
+            recipient: publicKey,
+            transactionHash: result.hash,
+        });
+
+    } catch (error) {
+        console.error('Error in fiatToDIAM:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+app.post('/fiat-to-diam', (req, res) => {
+    fiatToDIAM(req, res);
+});
+
 app.post('/login', (req, res) => {
     login(req, res);
 });

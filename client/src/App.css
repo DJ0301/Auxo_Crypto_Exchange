@@ -303,10 +303,10 @@ header {
 
 .chatbot-icon {
   position: fixed;
-  bottom: 8px;
-  right: 20px;
-  width: 120px; /* Adjust the size as needed */
-  height: 120px; /* Adjust the size as needed */
+  bottom: -40px;
+  right: -10px;
+  width: 220px; /* Adjust the size as needed */
+  height: 220px; /* Adjust the size as needed */
   cursor: pointer;
   z-index: 1001; /* Ensure it's above other elements */
 }
@@ -377,3 +377,149 @@ header {
   margin-right: 5px; /* Space between circle and text */
 }
 
+/* Base styles */
+.App {
+  text-align: center;
+}
+
+body {
+  font-size: 16px;
+}
+
+/* Header styles */
+header {
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+  padding-right: 10px;
+}
+
+.eth {
+  width: 30px;
+  height: auto;
+  padding-right: 5px;
+}
+
+.leftH, .rightH {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.Auxo {
+  padding-right: 10px;
+}
+
+/* Responsive header items */
+.headerItem {
+  padding: 8px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.connectButton {
+  padding: 8px 15px;
+  border-radius: 19px;
+}
+
+/* Main content */
+.mainWindow {
+  margin-top: 20px;
+  padding: 0 1rem;
+}
+
+/* Responsive modal */
+.modal-content {
+  width: 90%;
+  max-width: 300px;
+  height: auto;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Responsive public key display */
+.publickey {
+  font-size: 12px;
+  max-width: 150px;
+}
+
+/* Responsive chatbot icon */
+.chatbot-icon {
+  width: 150px;
+  height: 150px;
+  bottom: -20px;
+  right: -5px;
+}
+
+#chatbotlogo {
+  width: 60%;
+  height: 60%;
+}
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .leftH, .rightH {
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .headerItem {
+    font-size: 14px;
+  }
+
+  .connectButton {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .chatbot-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .publickey {
+    font-size: 10px;
+    max-width: 120px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .logo, .eth {
+    width: 40px;
+  }
+
+  .headerItem {
+    padding: 5px;
+    font-size: 12px;
+  }
+
+  .connectButton {
+    font-size: 14px;
+  }
+
+  .chatbot-icon {
+    width: 100px;
+    height: 100px;
+    bottom: 20px;
+    right: -2px;
+  }
+
+  .publickey {
+    max-width: 100px;
+  }
+}
