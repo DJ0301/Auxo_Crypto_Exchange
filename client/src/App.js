@@ -55,7 +55,7 @@ function App() {
       </Routes>
       </div>
       <div className="chatbot-icon" onClick={toggleChatbot}>
-        <img src="/chat-bot.png" alt="Chatbot Icon" id="chatbotlogo" />
+        <img src="/chatbot (1).png" alt="Chatbot Icon" id="chatbotlogo" />
       </div>
 
       {/* Render the chatbot */}
