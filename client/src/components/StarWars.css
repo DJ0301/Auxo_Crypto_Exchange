@@ -1,33 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Poller+One&display=swap');
 
 .star-wars-text {
-    position: relative;
-    height: 100vh; /* Adjust height as needed */
-    color: rgb(0, 94, 255);
-    font-family: 'Poller One', sans-serif; /* Use appropriate Star Wars font */
-    overflow: hidden;
-    z-index: -1;
+  position: relative;
+  height: 100vh; /* Adjust height as needed */
+  color: rgb(0, 94, 255);
+  font-family: 'Poller One', sans-serif; /* Use appropriate Star Wars font */
+  overflow: hidden;
+  z-index: -1;
+}
+
+.crawl-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 800px; /* Adjust width as needed */
+  font-size: 1.5rem; /* Adjust font size */
+  line-height: 1.5;
+  white-space: pre-line;
+  animation: crawl 20s linear infinite; /* Adjust animation duration as needed */
+  animation-play-state: running; /* Ensure the animation is running by default */
+}
+
+@keyframes crawl {
+  0% {
+    transform: translate(-50%, -50%) translateY(100%);
   }
-  
+  100% {
+    transform: translate(-50%, -50%) translateY(-100%);
+  }
+}
+@media (max-width: 600px) {
   .crawl-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 800px; /* Adjust width as needed */
-    font-size: 1.5rem; /* Adjust font size */
-    line-height: 1.5;
-    white-space: pre-line;
-    animation: crawl 20s linear infinite; /* Adjust animation duration as needed */
+    animation: crawl 40s linear infinite; /* Slower animation duration for smaller devices */
   }
-  
-  @keyframes crawl {
-    0% {
-      transform: translate(-50%, -50%) translateY(100%);
-    }
-    100% {
-      transform: translate(-50%, -50%) translateY(-100%);
-    }
-  }
-  
+}
