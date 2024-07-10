@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import './Swap.css'
 import { DownOutlined, CopyOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -226,7 +226,7 @@ const menuProps = {
 
   const confirmSwap = async () => {
     setIsProcessing(true);
-
+  
     try {
       const endpoint = isTradeForDiam ? 'trade-for-DIAM' : 'trade-for-assets';
       const response = await axios.post(`https://auxo-crypto-exchange.onrender.com/${endpoint}`, {
@@ -234,10 +234,11 @@ const menuProps = {
         amount: amount,
         asset: asset,
       });
-
-      setTransactionID(response.data.transactionID || response.data.transactionHashes.assetSend);
+  
+      const id = response.data.transactionID || response.data.transactionHashes.assetSend;
+      setTransactionID(id); // Update transaction ID state
+      console.log('Transaction ID:', transactionID);
       showToast('Trade successful!', 'success');
-      
       await fetchAccountBalances(userPublicKey);
       setAmount('');
     } catch (error) {
@@ -248,6 +249,7 @@ const menuProps = {
       setShowConfirmation(false);
     }
   };
+  
 
 
   const formatCurrentPrice = () => {
@@ -462,7 +464,7 @@ const menuProps = {
             </div>
             
         {transactionID && (
-          <div className='trasactionID'>
+          <div className='transactionID'>
             <p>Transaction ID: {transactionID}</p>
             <a
               href={`https://testnetexplorer.diamcircle.io/`}
