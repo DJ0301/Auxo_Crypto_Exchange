@@ -107,6 +107,11 @@ const menuProps = {
   }, [amount, tokenPrice, isTradeForDiam]);
 
   useEffect(() => {
+    if (accountBalances[asset] == undefined) {
+      setInsufficientFunds(true);
+      accountBalances[asset] = 0;
+    }
+
     if (amount && accountBalances[asset] !== undefined) {
       const assetBalance = parseFloat(accountBalances[asset]);
       const diamBalance = parseFloat(accountBalances['DIAM']);
