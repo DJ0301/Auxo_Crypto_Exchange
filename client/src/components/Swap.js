@@ -10,6 +10,7 @@ import EthereumIcon from '../icons/ethereum-eth-logo.png';
 import DogecoinIcon from '../icons/dogecoin-doge-logo.png';
 
 const Swap = ({ setUserPublicKey }) => {
+  const [showTransactionPopup, setShowTransactionPopup] = useState(false);
   const [userSecret, setUserSecret] = useState('');
   const [amount, setAmount] = useState('');
   const [asset, setAsset] = useState('TestBTC');
@@ -236,11 +237,12 @@ const menuProps = {
       });
   
       const id = response.data.transactionID || response.data.transactionHashes.assetSend;
-      setTransactionID(id); // Update transaction ID state
-      console.log('Transaction ID:', transactionID);
+      setTransactionID(id);
+      console.log('Transaction ID:', id);
       showToast('Trade successful!', 'success');
       await fetchAccountBalances(userPublicKey);
       setAmount('');
+      setShowTransactionPopup(true); // Show the transaction popup
     } catch (error) {
       console.error('Error trading:', error);
       showToast(`Trade failed: ${error.response?.data?.message || error.message}`, 'error');
@@ -463,20 +465,12 @@ const menuProps = {
              
             </div>
             
-        {transactionID && (
-          <div className='transactionID'>
-            <p>Transaction ID: {transactionID}</p>
-            <a
-              href={`https://testnetexplorer.diamcircle.io/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className='ViewTestNet'
-            >
-              View Testnet Explorer
-            </a>
-            
-          </div>
-        )}
+        {showTransactionPopup && (
+  <TransactionPopup 
+    transactionID={transactionID} 
+    onClose={() => setShowTransactionPopup(false)} 
+  />
+)}
           </div>
         )}
 
@@ -498,5 +492,26 @@ const menuProps = {
     </>
   );
 }
+
+const TransactionPopup = ({ transactionID, onClose }) => (
+  <div className="transactionPopup">
+    <div className="transactionPopupContent">
+      <h3>Transaction Successful</h3>
+      <p>Transaction ID:</p>
+      <p className="transaction-id">{transactionID}</p>
+      <a
+        href={`https://testnetexplorer.diamcircle.io/`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className='ViewTestNet'
+      >
+        View Testnet Explorer
+      </a>
+      <br />
+      <button onClick={onClose}>Close</button>
+      <p className="note">Note: Copy your transaction ID and paste it in the testnet explorer to view your transaction!</p>
+    </div>
+  </div>
+);
 
 export default Swap;
