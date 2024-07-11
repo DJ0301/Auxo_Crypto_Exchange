@@ -124,7 +124,7 @@ const menuProps = {
           setInsufficientFunds(false);
         }
       } else {
-        if (receiveAmount > diamBalance) {
+        if (amount > diamBalance) {
           setInsufficientFunds(true);
         } else {
           setInsufficientFunds(false);

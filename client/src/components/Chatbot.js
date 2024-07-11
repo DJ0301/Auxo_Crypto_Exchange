@@ -10,7 +10,7 @@ const Chatbot = ({ onClose }) => {
       </div>
       <div className="chatbot-iframe-container">
         <iframe
-          src="https://www.chatbase.co/chatbot-iframe/vVZlDGTPtpN_tqq3rBcCZ"
+          src="https://www.chatbase.co/chatbot-iframe/5O13FoRS5z6AGKwbtZJEc"
           width="100%"
           style={{ height: '100%', minHeight: '370px'}}
           frameBorder="0"
