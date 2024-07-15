@@ -11,6 +11,8 @@ import Chatbot from "./components/Chatbot";
 import ToOther from "./components/ToOther";
 import AssetTrading from "./components/AssetTrading";
 import StarWars from "./components/StarWars";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -68,6 +70,8 @@ function App() {
       {!userPublicKey && (
       <StarWars />
       )}
+      <ToastContainer/>
+
     </div>
   );
 }

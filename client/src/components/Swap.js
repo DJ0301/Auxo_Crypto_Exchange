@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './Swap.css'
 import { DownOutlined, CopyOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -183,6 +184,7 @@ const menuProps = {
 
 
   const handleLogin = async () => {
+    showToast("Note: During your initial login, it might take our servers up to 2 minutes to start.", "info");
     try {
       const response = await axios.post('https://auxo-crypto-exchange.onrender.com/login', {
         UserSecret: userSecret,
@@ -267,6 +269,7 @@ const menuProps = {
   };
 
   const handleRegister = async () => {
+    showToast("Note: During your initial registration, it might take our servers up to 2 minutes to start.", "info");
     setIsRegistering(true);
     try {
       const response = await axios.post('https://auxo-crypto-exchange.onrender.com/register');
