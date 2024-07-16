@@ -503,7 +503,7 @@ const TransactionPopup = ({ transactionID, onClose }) => (
       <p>Transaction ID:</p>
       <p className="transaction-id">{transactionID}</p>
       <a
-        href={`https://testnetexplorer.diamcircle.io/`}
+        href={`https://testnetexplorer.diamcircle.io/about-txhash/${transactionID}`}
         target="_blank"
         rel="noopener noreferrer"
         className='ViewTestNet'
@@ -512,7 +512,6 @@ const TransactionPopup = ({ transactionID, onClose }) => (
       </a>
       <br />
       <button onClick={onClose}>Close</button>
-      <p className="note">Note: Copy your transaction ID and paste it in the testnet explorer to view your transaction!</p>
     </div>
   </div>
 );
