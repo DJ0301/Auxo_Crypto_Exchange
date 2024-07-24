@@ -157,7 +157,6 @@ const menuProps = {
       setTokenPrice(response.data.price);
     } catch (error) {
       console.error('Error fetching token price:', error);
-      toast.error('Failed to fetch token price');
     }
   };
 
@@ -203,10 +202,8 @@ const menuProps = {
       }
 
       setShowLoginPopup(false);
-      showToast('Login successful!', 'success');
     } catch (error) {
       console.error('Error logging in:', error);
-      showToast(`Login failed: ${error.response?.data?.message || error.message}`, 'error');
     }
   };
 
@@ -452,10 +449,10 @@ const menuProps = {
                   <p className="insufficientFundsMessage">Insufficient Funds</p>
                 )}
                 <div className="assetTwo">
-                  {/* <p className='assetTwoText'>
+                  <p className='assetTwoText'>
                     You will receive: {receiveAmount.toFixed(2)}{' '}
                     {isTradeForDiam ? 'DIAM' : asset}
-                  </p> */}
+                  </p>
                 </div>
               </div>
             </div>

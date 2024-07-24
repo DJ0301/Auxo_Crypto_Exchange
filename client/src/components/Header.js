@@ -68,7 +68,6 @@ function Header(props) {
       }
 
       setShowLoginPopup(false); // Hide the login popup after successful login
-      toast.success('Login successful');
     } catch (error) {
       console.error('Error logging in:', error);
       toast.error('Login failed');
@@ -84,7 +83,6 @@ function Header(props) {
     localStorage.removeItem('keepLoggedIn');
     sessionStorage.removeItem('userSecret');
     sessionStorage.removeItem('keepLoggedIn');
-    toast.info('Logged out');
   };
 
   const fetchUserPublicKey = async (secret) => {
@@ -94,10 +92,8 @@ function Header(props) {
       });
 
       setUserPublicKey(response.data.publicKey);
-      toast.success('Login successful');
     } catch (error) {
       console.error('Error fetching public key:', error);
-      toast.error('Failed to fetch public key');
     }
   };
   // enD OF TESTING

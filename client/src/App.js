@@ -13,6 +13,7 @@ import AssetTrading from "./components/AssetTrading";
 import StarWars from "./components/StarWars";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Product from "./components/Product";
 
 function App() {
   const { address, isConnected } = useAccount();
@@ -51,9 +52,8 @@ function App() {
                 closeLogin={closeLogin} 
                 loggedIn={loggedIn} 
                 setLoggedIn={setLoggedIn}  />} />
-          <Route path="/tokens" element={<Tokens />} />
           <Route path="/to-other" element={<ToOther />} />
-          <Route path="/asset-trading" element={<AssetTrading userPublicKey={userPublicKey} />} />
+          <Route path="/tokens" element={<Product userPublicKey={userPublicKey} />} />
       </Routes>
       </div>
       <div className="chatbot-icon" onClick={toggleChatbot}>

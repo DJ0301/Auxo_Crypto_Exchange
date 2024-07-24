@@ -1,82 +1,141 @@
+import React, { useState } from 'react';
+import axios from 'axios';
 import './Product.css';
+import Dia from '../dia.webp';
+import { DownOutlined } from '@ant-design/icons';
+import { Dropdown, Menu } from 'antd';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+function Product({ userPublicKey }) {
+  const items = [
+    {
+      label: 'DIAM',
+      key: 'DIAM',
+      icon: <img src={Dia} alt="DIAM" style={{ width: '20px', height: '20px' }} />,
+    }
+  ];
 
-function Product() {
-  // const amount = 500;
-  // const currency = "INR";
-  // const receiptId = "qwsaq1";
+  const [amount, setAmount] = useState('');
+  const [asset, setAsset] = useState(items[0].key);
+  const [receiveAmount, setReceiveAmount] = useState(0);
 
-  // const paymentHandler = async (e) => {
-  //   const response = await fetch("http://localhost:5001/order", {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       amount,
-  //       currency,
-  //       receipt: receiptId,
-  //     }),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   const order = await response.json();
-  //   console.log(order);
+  const handleMenuClick = (e) => {
+    setAsset(e.key);
+  };
 
-  //   var options = {
-  //     key: "rzp_test_goQdXjPF8Zv1kQ", // Enter the Key ID generated from the Dashboard
-  //     amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-  //     currency,
-  //     name: "AUXO", //your business name
-  //     description: "Test Transaction",
-  //     image: "/logoTrans.png",
-  //     order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-  //     handler: async function (response) {
-  //       const body = {
-  //         ...response,
-  //       };
+  const calculateReceiveAmount = (amount) => {
+    return amount / 20;  // Update the logic as needed
+  };
 
-  //       const validateRes = await fetch(
-  //         "http://localhost:5001/order/validate",
-  //         {
-  //           method: "POST",
-  //           body: JSON.stringify(body),
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //       const jsonRes = await validateRes.json();
-  //       console.log(jsonRes);
-  //     },
-  //     prefill: {
-  //       //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-  //       name: "Web Dev Matrix", //your customer's name
-  //       email: "webdevmatrix@example.com",
-  //       contact: "9000000000", //Provide the customer's phone number for better conversion rates
-  //     },
-  //     notes: {
-  //       address: "Razorpay Corporate Office",
-  //     },
-  //     theme: {
-  //       color: "#000000",
-  //     },
-  //   };
-  //   var rzp1 = new window.Razorpay(options);
-  //   rzp1.on("payment.failed", function (response) {
-  //     alert(response.error.code);
-  //     alert(response.error.description);
-  //     alert(response.error.source);
-  //     alert(response.error.step);
-  //     alert(response.error.reason);
-  //     alert(response.error.metadata.order_id);
-  //     alert(response.error.metadata.payment_id);
-  //   });
-  //   rzp1.open();
-  //   e.preventDefault();
-  // };
+  const paymentHandler = async (e) => {
+    e.preventDefault();
+
+    if (!userPublicKey) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3009/order", {
+        amount: amount * 100,
+        currency: 'INR',
+        receipt: 'qwsaq1',
+      });
+
+      const order = response.data;
+      console.log(order);
+
+      var options = {
+        key: "rzp_test_goQdXjPF8Zv1kQ",
+        amount: amount * 100,
+        currency: 'INR',
+        name: "AUXO",
+        description: "Test Transaction",
+        image: "/logoTrans.png",
+        order_id: order.id,
+        handler: async function (response) {
+            const body = {
+              ...response,
+              publicKey: userPublicKey,
+              amount 
+            };
+
+            const validateRes = await axios.post("http://localhost:3009/order/validate", body);
+            const jsonRes = validateRes.data;
+
+            console.log(jsonRes);
+            if (jsonRes.msg === "success") {
+              try{
+              console.log(amount, userPublicKey, jsonRes.paymentId);
+              const swapResponse = await axios.post("https://auxo-crypto-exchange.onrender.com/fiat-to-diam", {publicKey: userPublicKey,
+                amount,
+                payment_id: jsonRes.paymentId});
+              const swapRes = swapResponse.data;
+              console.log(swapRes);
+              toast.success("Payment successful");
+              toast.success(`Head over to your wallet to see the newly transferred ${amount/20} DIAM !`);
+              }
+              catch(err){
+                console.log(err);
+              }
+            }
+          },
+        notes: {
+          address: "Razorpay Corporate Office",
+        },
+        theme: {
+          color: "#000000",
+        },
+      };
+
+      var rzp1 = new window.Razorpay(options);
+      rzp1.on("payment.failed", function (response) {
+        alert(response.error.description);
+      });
+
+      rzp1.open();
+    } catch (error) {
+      console.error("Error creating order: ", error);
+    }
+  };
 
   return (
-    <div className="product">
-    COMING SOON !
-    </div>
+    userPublicKey ? (
+      <div className="product">
+        <div className="inputs">
+          <label> Amount : </label>
+          <input
+            className="texting"
+            type="number"
+            value={amount}
+            onChange={(e) => {
+              setAmount(e.target.value);
+              setReceiveAmount(calculateReceiveAmount(e.target.value));
+            }}
+            placeholder="Amount in INR"
+          />
+          <Dropdown overlay={
+            <Menu onClick={handleMenuClick}>
+              {items.map(item => (
+                <Menu.Item key={item.key} icon={item.icon}>
+                  {item.label}
+                </Menu.Item>
+              ))}
+            </Menu>
+          }>
+            <button className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+              {items.find(item => item.key === asset)?.icon}
+              <span className="text-cont">{items.find(item => item.key === asset)?.label}</span>
+              <DownOutlined />
+            </button>
+          </Dropdown>
+        </div>
+        <p>You will receive {receiveAmount} DIAM</p>
+        <button onClick={paymentHandler}>Pay</button>
+      </div>
+    ) : (
+      <div>Please connect your wallet to make a payment.</div>
+    )
   );
 }
 
